@@ -1,0 +1,10 @@
+name: MineralContest
+version: 1.0.0
+author: ValaniDev
+main: dev.valani.mineralcontest.Main
+commands:
+  mineralcontest:
+    aliases: [mc]
+    description: "Default command for mineral contest"
+  arenachest:
+    description: "Gérer le coffre d'arène"

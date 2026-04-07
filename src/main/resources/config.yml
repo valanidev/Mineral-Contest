@@ -1,0 +1,14 @@
+plugin:
+  prefix: '&2[&aMineral Contest&2] &r'
+  enabled: '&ePlugin activé.'
+  disabled: '&ePlugin désactivé.'
+  only_player_command: "&cSeul un joueur peut utiliser cette commande."
+  not_enough_args: "&cCommande incomplète..."
+  no_such_args: "&cArgument inconnu..."
+
+arena:
+  chest_block: 'CHEST'
+  chest_removed: "&aCoffre d'arène supprimé."
+  chest_placed: "&aCoffre d'arène placé."
+  chest_not_placed: "&cLe coffre n'est pas encore placé."
+  chest_location: "&aLe coffre est situé en: &e{LOCATION}"
