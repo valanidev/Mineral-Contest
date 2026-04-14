@@ -12,3 +12,29 @@ arena:
   chest_placed: "&aCoffre d'arène placé."
   chest_not_placed: "&cLe coffre n'est pas encore placé."
   chest_location: "&aLe coffre est situé en: &e{LOCATION}"
+
+game:
+  duration_seconds: 3600
+  max_players_per_team: 4
+
+  teams:
+    red:
+      name: "Rouge"
+      color: "RED"
+      icon: "RED_WOOL"
+    green:
+      name: "Vert"
+      color: "GREEN"
+      icon: "GREEN_WOOL"
+    blue:
+      name: "Bleu"
+      color: "BLUE"
+      icon: "BLUE_WOOL"
+    yellow:
+      name: "Jaune"
+      color: "YELLOW"
+      icon: "YELLOW_WOOL"
+
+  started: "&aLa partie a démarré !"
+  ended: "&cLa partie est terminée !"
+  reset: "&7La partie a été réinitialisée."

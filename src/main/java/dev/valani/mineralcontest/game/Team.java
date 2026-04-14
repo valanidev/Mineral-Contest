@@ -48,24 +48,28 @@ public class Team {
         return members.size() >= maxPlayers;
     }
 
-    public boolean hasMember(UUID uuid) {
-        return members.contains(uuid);
+    public boolean hasMember(Player player) {
+        return members.contains(player.getUniqueId());
     }
 
     public boolean addMember(Player player) {
-        if (isFull() || hasMember(player.getUniqueId())) return false;
+        if (isFull() || hasMember(player)) return false;
         members.add(player.getUniqueId());
         return true;
     }
 
     public boolean removeMember(Player player) {
-        if (!hasMember(player.getUniqueId())) return false;
+        if (!hasMember(player)) return false;
         members.remove(player.getUniqueId());
         return true;
     }
 
     public void clear() {
         members.clear();
+    }
+
+    public int size() {
+        return members.size();
     }
 
     public String getDisplayName() {

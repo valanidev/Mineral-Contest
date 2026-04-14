@@ -1,4 +1,4 @@
-package dev.valani.mineralcontest.managers;
+package dev.valani.mineralcontest.game;
 
 public enum GameState {
     WAITING,
