@@ -5,39 +5,40 @@ import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Main extends JavaPlugin {
-    private static Main plugin;
+    private String prefix;
 
     @Override
     public void onEnable() {
-        plugin = this;
         saveDefaultConfig();
-        print(getString("plugin.enabled"));
+        prefix = ChatColor.translateAlternateColorCodes('&',
+                getConfig().getString("plugin.prefix", "[MineralContest] "));
+        Bukkit.getConsoleSender().sendMessage(getPrefix() + getString("plugin.enabled"));
 
         new Registers(this);
     }
 
     @Override
     public void onDisable() {
-        print(getString("plugin.disabled"));
+        Bukkit.getConsoleSender().sendMessage(getPrefix() + getString("plugin.disabled"));
     }
 
-    public static Main getPlugin() {
-        return plugin;
-    }
-
-    public void print(String message) {
-        Bukkit.getConsoleSender().sendMessage(getPrefix() + message);
+    public void consoleError(String message) {
+        Bukkit.getConsoleSender().sendMessage(getPrefix() + ChatColor.RED + message);
     }
 
     public String getPrefix() {
-        return getString("plugin.prefix");
+        return prefix;
     }
 
     public String getString(String key) {
-        return ChatColor.translateAlternateColorCodes('&', getConfig().getString(key, "Unknown"));
+        String value = getConfig().getString(key);
+        if(value == null) {
+            consoleError("No config value for " + key);
+            return "§cMissing key '" + key + "'...";
+        }
+        return ChatColor.translateAlternateColorCodes('&', value);
     }
 
     public int getInt(String key) {
@@ -47,6 +48,6 @@ public class Main extends JavaPlugin {
     public List<String> getStringList(String key) {
         return getConfig().getStringList(key).stream()
                 .map(s -> ChatColor.translateAlternateColorCodes('&', s))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

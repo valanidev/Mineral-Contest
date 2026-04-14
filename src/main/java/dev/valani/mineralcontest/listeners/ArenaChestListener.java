@@ -6,22 +6,27 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 
 public class ArenaChestListener implements Listener {
 
     private final Main plugin;
     private final CommandArenaChest arenaChestCommand;
+    private final Inventory arenaChestInventory;
 
     public ArenaChestListener(Main plugin, CommandArenaChest arenaChestCommand) {
         this.plugin = plugin;
         this.arenaChestCommand = arenaChestCommand;
+        this.arenaChestInventory = Bukkit.createInventory(null, 27, "Arena Chest");
     }
 
     @EventHandler
@@ -37,8 +42,25 @@ public class ArenaChestListener implements Listener {
         if (!clickedBlock.getLocation().equals(chestLoc.getBlock().getLocation())) return;
 
         event.setCancelled(true);
+
+        if(clickedBlock.getState() instanceof Chest chest) {
+            chest.open();
+        }
+
         Player player = event.getPlayer();
-        player.openInventory(Bukkit.createInventory(null, 27, "Arena Chest"));
+        player.openInventory(arenaChestInventory);
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (!event.getInventory().equals(arenaChestInventory)) return;
+
+        Location chestLoc = arenaChestCommand.getCachedChestLocation();
+        if (chestLoc == null) return;
+
+        if (chestLoc.getBlock().getState() instanceof Chest chest) {
+            chest.close();
+        }
     }
 
     @EventHandler

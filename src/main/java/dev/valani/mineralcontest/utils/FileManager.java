@@ -13,11 +13,6 @@ public class FileManager {
     private File file;
     private FileConfiguration config;
 
-    /**
-     * Crée un fichier YAML dans le dossier du plugin.
-     * @param plugin Instance du plugin
-     * @param fileName Nom du fichier, ex: "arena.yml"
-     */
     public FileManager(JavaPlugin plugin, String fileName) {
         this.plugin = plugin;
         createFile(fileName);
@@ -26,7 +21,7 @@ public class FileManager {
     private void createFile(String fileName) {
         file = new File(plugin.getDataFolder(), fileName);
         if (!file.exists()) {
-            file.getParentFile().mkdirs(); // crée le dossier plugin si absent
+            file.getParentFile().mkdirs();
             try {
                 file.createNewFile();
             } catch (IOException e) {
@@ -36,12 +31,10 @@ public class FileManager {
         config = YamlConfiguration.loadConfiguration(file);
     }
 
-    /** Retourne le FileConfiguration pour lire ou écrire dedans */
     public FileConfiguration getConfig() {
         return config;
     }
 
-    /** Sauvegarde le fichier */
     public void save() {
         try {
             config.save(file);
@@ -50,19 +43,16 @@ public class FileManager {
         }
     }
 
-    /** Recharge le fichier depuis le disque */
     public void reload() {
         config = YamlConfiguration.loadConfiguration(file);
     }
 
-    /** Supprime le fichier */
     public void delete() {
         if (file.exists()) {
             file.delete();
         }
     }
 
-    /** Retourne le fichier physique */
     public File getFile() {
         return file;
     }
