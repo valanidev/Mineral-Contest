@@ -1,7 +1,9 @@
 package dev.valani.mineralcontest.commands;
 
 import dev.valani.mineralcontest.Main;
+import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.managers.GameManager;
+import dev.valani.mineralcontest.menus.KitSelectorMenu;
 import dev.valani.mineralcontest.menus.TeamSelectorMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,11 +16,13 @@ public class CommandMineralContest implements CommandExecutor {
     private final GameManager gameManager;
 
     private final TeamSelectorMenu teamSelectorMenu;
+    private final KitSelectorMenu kitSelectorMenu;
 
-    public CommandMineralContest(Main plugin, GameManager gameManager, TeamSelectorMenu teamSelectorMenu) {
+    public CommandMineralContest(Main plugin, GameManager gameManager, TeamSelectorMenu teamSelectorMenu, KitSelectorMenu kitSelectorMenu) {
         this.plugin = plugin;
         this.gameManager = gameManager;
         this.teamSelectorMenu = teamSelectorMenu;
+        this.kitSelectorMenu = kitSelectorMenu;
     }
 
     @Override
@@ -34,14 +38,25 @@ public class CommandMineralContest implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "team" -> teamSelectorMenu.open(player);
+            case "team" -> {
+                if (!gameManager.isState(GameState.WAITING)) {
+                    player.sendMessage("§cLa partie a déjà commencé.");
+                    return false;
+                }
+                teamSelectorMenu.open(player);
+            }
+            case "kit" -> {
+                if (!gameManager.isState(GameState.WAITING)) {
+                    player.sendMessage("§cLa partie a déjà commencé.");
+                    return false;
+                }
+                kitSelectorMenu.open(player);
+            }
             case "start" -> {
                 gameManager.start();
-                player.sendMessage("§aGame started.");
             }
             case "stop" -> {
                 gameManager.end();
-                player.sendMessage("§aGame stopped.");
             }
             default -> {
                 player.sendMessage(plugin.getString("plugin.invalid_command"));
