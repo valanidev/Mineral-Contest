@@ -12,7 +12,8 @@ import java.util.UUID;
 public class KitManager {
 
     public static final List<KitBase> KITS = List.of(
-            new KitMiner()
+            new KitMiner(),
+            new KitBarbarian()
     );
 
     private final Map<UUID, KitBase> playerKits = new HashMap<>();

@@ -3,6 +3,7 @@ package dev.valani.mineralcontest.listeners;
 import dev.valani.mineralcontest.game.kits.KitMiner;
 import dev.valani.mineralcontest.managers.KitManager;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,6 +67,7 @@ public class MinerKitListener implements Listener {
                 event.setDropItems(false);
                 smelted.setAmount(drop.getAmount());
                 player.getInventory().addItem(smelted);
+                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
             }
         }
     }

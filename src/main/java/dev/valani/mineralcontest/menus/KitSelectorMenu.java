@@ -9,6 +9,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class KitSelectorMenu {
@@ -40,11 +42,10 @@ public class KitSelectorMenu {
         boolean selected = kitManager.hasKit(player, kit);
 
         meta.setDisplayName((selected ? "§a✔ " : "§f") + kit.getDisplayName());
-        meta.setLore(List.of(
-                kit.getDescription(),
-                "",
-                selected ? "§a§lKit actuel" : "§eCliquer pour sélectionner"
-        ));
+        List<String> lore = new ArrayList<>(Arrays.asList(kit.getDescription().split("\n")));
+        lore.add("");
+        lore.add(selected ? "§a§lKit actuel" : "§eCliquer pour sélectionner");
+        meta.setLore(lore);
 
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 
