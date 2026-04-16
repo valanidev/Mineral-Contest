@@ -48,7 +48,6 @@ public class KitSelectorMenu {
         meta.setLore(lore);
 
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.set
 
         item.setItemMeta(meta);
         return item;

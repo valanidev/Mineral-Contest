@@ -3,6 +3,7 @@ package dev.valani.mineralcontest;
 import dev.valani.mineralcontest.commands.CommandArenaChest;
 import dev.valani.mineralcontest.commands.CommandMineralContest;
 import dev.valani.mineralcontest.listeners.ArenaChestListener;
+import dev.valani.mineralcontest.listeners.ChatListener;
 import dev.valani.mineralcontest.listeners.KitSelectorListener;
 import dev.valani.mineralcontest.listeners.MinerKitListener;
 import dev.valani.mineralcontest.listeners.PlayerJoinListener;
@@ -35,6 +36,7 @@ public class Registers {
         plugin.getCommand("mineralcontest").setExecutor(mineralContestCmd);
         plugin.getCommand("arenachest").setExecutor(arenaChestCmd);
 
+        pm.registerEvents(new ChatListener(gameManager), plugin);
         pm.registerEvents(new PlayerJoinListener(), plugin);
         pm.registerEvents(new ArenaChestListener(plugin, arenaChestCmd), plugin);
         pm.registerEvents(new TeamSelectorListener(gameManager, teamSelectorMenu), plugin);
