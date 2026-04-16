@@ -41,6 +41,8 @@ public class TeamSelectorListener implements Listener {
             case SUCCESS -> {
                 player.sendMessage(target.getColor() + "Tu as rejoint l'équipe " + target.getName() + " !");
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                player.setDisplayName(target.getColor() + player.getName());
+                player.setPlayerListName(target.getColor() + player.getName());
             }
             case TEAM_FULL -> {
                 player.sendMessage("§cCette équipe est pleine !");

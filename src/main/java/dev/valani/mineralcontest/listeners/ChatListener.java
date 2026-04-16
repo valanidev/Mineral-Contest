@@ -27,7 +27,7 @@ public class ChatListener implements Listener {
         if (teamOpt.isEmpty()) return;
 
         Team team = teamOpt.get();
-        String format = team.getColor() + team.getName() + " " + player.getName() + ChatColor.RESET + ": %2$s";
+        String format = team.getColor() + team.getName() + " " + player.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + "%2$s";
         event.setFormat(format);
     }
 }

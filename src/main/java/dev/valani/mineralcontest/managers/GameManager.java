@@ -86,6 +86,10 @@ public class GameManager {
         state = GameState.WAITING;
         cancelTimer();
         teams.forEach(Team::clear);
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            p.setDisplayName(p.getName());
+            p.setPlayerListName(p.getName());
+        });
         Bukkit.broadcastMessage(plugin.getString("game.reset"));
 
         return GameResult.SUCCESS;
