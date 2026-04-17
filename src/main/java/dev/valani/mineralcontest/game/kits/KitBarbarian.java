@@ -4,17 +4,18 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class KitBarbarian extends KitBase {
 
     private final float BASE_WALK_SPEED = 0.2f;
     private final float ATTACK_MULTIPLIER = 1.15f;
-    private final float WALK_SPEED_MULTIPLIER = 0.95f;
+    private final float WALK_SPEED_MULTIPLIER = 0.9f;
 
     public KitBarbarian() {
         super(
                 "Barbare",
-                "§a+ Augmente les dégats aux entités de 15%.\n§c- Réduit la vitesse de marche de 5%.",
+                "§a+ Augmente les dégats aux entités de 15%.\n§c- Réduit la vitesse de marche de 10%.",
                 Material.IRON_SWORD
         );
     }
@@ -26,6 +27,10 @@ public class KitBarbarian extends KitBase {
             attackDamage.setBaseValue(attackDamage.getDefaultValue() * ATTACK_MULTIPLIER);
         }
         player.setWalkSpeed(BASE_WALK_SPEED * WALK_SPEED_MULTIPLIER);
+        player.getInventory().setHelmet(new ItemStack(Material.IRON_HELMET));
+        player.getInventory().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
+        player.getInventory().setLeggings(new ItemStack(Material.IRON_LEGGINGS));
+        player.getInventory().setBoots(new ItemStack(Material.IRON_BOOTS));
     }
 
     @Override

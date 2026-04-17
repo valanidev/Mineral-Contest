@@ -1,10 +1,12 @@
 package dev.valani.mineralcontest.commands;
 
 import dev.valani.mineralcontest.Main;
+import dev.valani.mineralcontest.game.Drop;
 import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.menus.KitSelectorMenu;
 import dev.valani.mineralcontest.menus.TeamSelectorMenu;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,9 +37,13 @@ public class CommandMineralContest implements CommandExecutor {
         switch (args[0].toLowerCase()) {
             case "start" -> {
                 gameManager.start();
+
             }
             case "stop" -> {
                 gameManager.end();
+            }
+            case "drop" -> {
+                Drop drop = new Drop(plugin);
             }
             default -> {
                 player.sendMessage(plugin.getString("plugin.invalid_command"));
@@ -45,5 +51,11 @@ public class CommandMineralContest implements CommandExecutor {
         }
 
         return true;
+    }
+
+    private void checkAllPlayersReady() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+
+        }
     }
 }

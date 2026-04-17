@@ -2,13 +2,12 @@ package dev.valani.mineralcontest.commands;
 
 import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.utils.FileManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Objects;
 
@@ -17,21 +16,25 @@ public class CommandArenaChest implements CommandExecutor {
     private final FileManager arenaFile;
     private Location cachedChestLocation;
     private Material cachedChestMaterial;
+    private BukkitTask particleTask;
+    private BukkitTask availabilityTask;
+    private boolean chestAvailable = false;
 
     public CommandArenaChest(Main plugin, FileManager arenaFile) {
         this.plugin = plugin;
         this.arenaFile = arenaFile;
         this.cachedChestLocation = loadChestLocationFromFile();
         this.cachedChestMaterial = loadChestMaterialFromConfig();
+        if (cachedChestLocation != null) makeAvailable();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if(!(sender instanceof Player player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(plugin.getString("plugin.only_player_command"));
             return false;
         }
-        if(args.length < 1) {
+        if (args.length < 1) {
             player.sendMessage(plugin.getString("plugin.not_enough_args"));
             player.sendMessage("§cUsage: §e\n- set \n- remove \n- view");
             return false;
@@ -43,7 +46,7 @@ public class CommandArenaChest implements CommandExecutor {
                 player.sendMessage(plugin.getString("arena.chest_placed"));
             }
             case "remove" -> {
-                if(cachedChestLocation == null) {
+                if (cachedChestLocation == null) {
                     player.sendMessage(plugin.getString("arena.chest_not_placed"));
                     break;
                 }
@@ -51,7 +54,7 @@ public class CommandArenaChest implements CommandExecutor {
                 player.sendMessage(plugin.getString("arena.chest_removed"));
             }
             case "view" -> {
-                if(cachedChestLocation == null) {
+                if (cachedChestLocation == null) {
                     player.sendMessage(plugin.getString("arena.chest_not_placed"));
                     break;
                 }
@@ -85,8 +88,17 @@ public class CommandArenaChest implements CommandExecutor {
         return mat;
     }
 
-    public Location getCachedChestLocation() { return cachedChestLocation; }
-    public Material getCachedChestMaterial()  { return cachedChestMaterial; }
+    public Location getCachedChestLocation() {
+        return cachedChestLocation;
+    }
+
+    public Material getCachedChestMaterial() {
+        return cachedChestMaterial;
+    }
+
+    public boolean isChestAvailable() {
+        return chestAvailable;
+    }
 
     private String formatLocation(Location loc) {
         return loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ()
@@ -106,6 +118,7 @@ public class CommandArenaChest implements CommandExecutor {
 
         loc.getBlock().setType(cachedChestMaterial);
         cachedChestLocation = loc;
+        makeAvailable();
     }
 
     void removeArenaChest() {
@@ -116,6 +129,62 @@ public class CommandArenaChest implements CommandExecutor {
         arenaFile.getConfig().set("chest", null); // supprime toute la section d'un coup
         arenaFile.save();
 
+        cancelRecoveryTask();
+        stopParticleTask();
+        chestAvailable = false;
         cachedChestLocation = null;
+    }
+
+    private void makeAvailable() {
+        cancelRecoveryTask();
+        chestAvailable = true;
+        Bukkit.broadcastMessage(plugin.getString("arena.chest_available"));
+        Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1));
+        startParticleTask();
+    }
+
+    public void lockForAnimation() {
+        chestAvailable = false;
+        stopParticleTask();
+    }
+
+    public void unlockFromAnimation() {
+        cancelRecoveryTask();
+        chestAvailable = true;
+        startParticleTask();
+    }
+
+    public void onChestLooted() {
+        cancelRecoveryTask();
+        chestAvailable = false;
+        stopParticleTask();
+        long delayTicks = (long) ((0 + Math.random() * 1) * 60 * 20);
+        availabilityTask = Bukkit.getScheduler().runTaskLater(plugin, this::makeAvailable, delayTicks);
+    }
+
+    private void cancelRecoveryTask() {
+        if (availabilityTask != null && !availabilityTask.isCancelled()) {
+            availabilityTask.cancel();
+        }
+        availabilityTask = null;
+    }
+
+    private void startParticleTask() {
+        stopParticleTask();
+        particleTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            if (cachedChestLocation == null || cachedChestLocation.getWorld() == null) return;
+            cachedChestLocation.getWorld().spawnParticle(
+                    Particle.HAPPY_VILLAGER,
+                    cachedChestLocation.clone().add(0.5, 0.5, 0.5),
+                    8, 0.3, 0.3, 0.3, 0.02
+            );
+        }, 0L, 20L);
+    }
+
+    private void stopParticleTask() {
+        if (particleTask != null && !particleTask.isCancelled()) {
+            particleTask.cancel();
+        }
+        particleTask = null;
     }
 }

@@ -12,6 +12,22 @@ arena:
   chest_placed: "&aCoffre d'arène placé."
   chest_not_placed: "&cLe coffre n'est pas encore placé."
   chest_location: "&aLe coffre est situé en: &e{LOCATION}"
+  chest_available: "&aLe coffre d'arène est maintenant disponible ! Fais §e/arene §apour te téléporter."
+  chest_unavailable: "&cLe coffre d'arène n'est pas disponible pour le moment."
+  chest_in_use: "&cUn joueur est en train d'ouvrir le coffre d'arène !"
+  chest_rewards:
+    - material: DIAMOND
+      min: 1
+      max: 3
+    - material: IRON_INGOT
+      min: 10
+      max: 15
+    - material: GOLD_INGOT
+      min: 3
+      max: 7
+    - material: EMERALD
+      min: 0
+      max: 4
 
 game:
   duration_seconds: 3600
@@ -38,3 +54,19 @@ game:
   started: "&aLa partie a démarré !"
   ended: "&cLa partie est terminée !"
   reset: "&7La partie a été réinitialisée."
+
+drop:
+  chest_placed: "&6Un drop est apparu en &e{X}&6, &e{Y}&6, &e{Z}&6 !"
+  loot:
+    - material: DIAMOND
+      min: 2
+      max: 6
+    - material: IRON_INGOT
+      min: 24
+      max: 36
+    - material: GOLD_INGOT
+      min: 8
+      max: 20
+    - material: EMERALD
+      min: 0
+      max: 3
