@@ -39,7 +39,7 @@ public class Registers {
         pm.registerEvents(new TeamSelectorListener(gameManager, teamSelectorMenu), plugin);
         pm.registerEvents(new KitSelectorListener(gameManager, kitManager, kitSelectorMenu), plugin);
         pm.registerEvents(new PlayerTakeDamageListener(gameManager), plugin);
-        pm.registerEvents(new PlayerDeathListener(), plugin);
+        pm.registerEvents(new PlayerDeathListener(gameManager), plugin);
 
         pm.registerEvents(new ChatListener(gameManager), plugin);
         pm.registerEvents(new ArenaChestListener(plugin, arenaChestCmd), plugin);
