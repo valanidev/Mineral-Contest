@@ -1,7 +1,9 @@
 package dev.valani.mineralcontest;
 
 import dev.valani.mineralcontest.commands.CommandArenaChest;
+import dev.valani.mineralcontest.commands.CommandKit;
 import dev.valani.mineralcontest.commands.CommandMineralContest;
+import dev.valani.mineralcontest.commands.CommandTeam;
 import dev.valani.mineralcontest.listeners.ArenaChestListener;
 import dev.valani.mineralcontest.listeners.ChatListener;
 import dev.valani.mineralcontest.listeners.KitSelectorListener;
@@ -32,9 +34,11 @@ public class Registers {
         FileManager arenaFile = new FileManager(plugin, "arena.yml");
 
         CommandArenaChest arenaChestCmd = new CommandArenaChest(plugin, arenaFile);
-        CommandMineralContest mineralContestCmd = new CommandMineralContest(plugin, gameManager, teamSelectorMenu, kitSelectorMenu);
+        CommandMineralContest mineralContestCmd = new CommandMineralContest(plugin, gameManager);
         plugin.getCommand("mineralcontest").setExecutor(mineralContestCmd);
         plugin.getCommand("arenachest").setExecutor(arenaChestCmd);
+        plugin.getCommand("team").setExecutor(new CommandTeam(plugin, teamSelectorMenu, gameManager));
+        plugin.getCommand("kit").setExecutor(new CommandKit(plugin, kitSelectorMenu, gameManager));
 
         pm.registerEvents(new ChatListener(gameManager), plugin);
         pm.registerEvents(new PlayerJoinListener(), plugin);

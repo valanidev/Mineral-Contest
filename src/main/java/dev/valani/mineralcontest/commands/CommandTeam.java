@@ -3,47 +3,36 @@ package dev.valani.mineralcontest.commands;
 import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.managers.GameManager;
-import dev.valani.mineralcontest.menus.KitSelectorMenu;
 import dev.valani.mineralcontest.menus.TeamSelectorMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandMineralContest implements CommandExecutor {
+public class CommandTeam implements CommandExecutor {
 
     private final Main plugin;
     private final GameManager gameManager;
+    private final TeamSelectorMenu teamSelectorMenu;
 
-    public CommandMineralContest(Main plugin, GameManager gameManager) {
+    public CommandTeam(Main plugin, TeamSelectorMenu teamSelectorMenu, GameManager gameManager) {
         this.plugin = plugin;
+        this.teamSelectorMenu = teamSelectorMenu;
         this.gameManager = gameManager;
     }
 
-    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(plugin.getString("plugin.only_player_command"));
             return false;
         }
-        if (args.length < 1) {
-            player.sendMessage(plugin.getString("plugin.not_enough_args"));
-            player.sendMessage("§cUsage: §e\n- kit \n- team");
+
+        if (!gameManager.isState(GameState.WAITING)) {
+            player.sendMessage("§cLa partie a déjà commencé.");
             return false;
         }
 
-        switch (args[0].toLowerCase()) {
-            case "start" -> {
-                gameManager.start();
-            }
-            case "stop" -> {
-                gameManager.end();
-            }
-            default -> {
-                player.sendMessage(plugin.getString("plugin.invalid_command"));
-            }
-        }
-
+        teamSelectorMenu.open(player);
         return true;
     }
 }

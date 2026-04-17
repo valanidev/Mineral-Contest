@@ -5,8 +5,12 @@ main: dev.valani.mineralcontest.Main
 api-version: 21.1.1
 commands:
   mineralcontest:
-    aliases: [mc]
+    aliases: [ mc ]
     description: "Default command for mineral contest"
   arenachest:
-    aliases: [ac]
+    aliases: [ ac ]
     description: "Gérer le coffre d'arène"
+  kit:
+    description: "Sélectionner un kit"
+  team:
+    description: "Sélectionner une équipe"
