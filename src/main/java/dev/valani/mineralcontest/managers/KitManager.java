@@ -14,7 +14,8 @@ public class KitManager {
     public static final List<KitBase> KITS = List.of(
             new KitMiner(),
             new KitBarbarian(),
-            new KitAgile()
+            new KitAgile(),
+            new KitRobust()
     );
 
     private final Map<UUID, KitBase> playerKits = new HashMap<>();
