@@ -1,6 +1,8 @@
 package dev.valani.mineralcontest.commands;
 
 import dev.valani.mineralcontest.Main;
+import dev.valani.mineralcontest.game.GameState;
+import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.utils.FileManager;
 import org.bukkit.*;
 import org.bukkit.command.Command;
@@ -10,10 +12,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CommandArenaChest implements CommandExecutor {
     private final Main plugin;
     private final FileManager arenaFile;
+    private GameManager gameManager;
     private Location cachedChestLocation;
     private Material cachedChestMaterial;
     private BukkitTask particleTask;
@@ -25,7 +29,10 @@ public class CommandArenaChest implements CommandExecutor {
         this.arenaFile = arenaFile;
         this.cachedChestLocation = loadChestLocationFromFile();
         this.cachedChestMaterial = loadChestMaterialFromConfig();
-        if (cachedChestLocation != null) makeAvailable();
+    }
+
+    public void setGameManager(GameManager gameManager) {
+        this.gameManager = gameManager;
     }
 
     @Override
@@ -137,6 +144,7 @@ public class CommandArenaChest implements CommandExecutor {
 
     private void makeAvailable() {
         cancelRecoveryTask();
+        if (gameManager != null && !gameManager.isState(GameState.STARTED)) return;
         chestAvailable = true;
         Bukkit.broadcastMessage(plugin.getString("arena.chest_available"));
         Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1));
@@ -158,7 +166,14 @@ public class CommandArenaChest implements CommandExecutor {
         cancelRecoveryTask();
         chestAvailable = false;
         stopParticleTask();
-        long delayTicks = (long) ((0 + Math.random() * 1) * 60 * 20);
+        scheduleAvailability();
+    }
+
+    public void scheduleAvailability() {
+        cancelRecoveryTask();
+        long minSeconds = plugin.getInt("arena.cooldown_min_seconds");
+        long maxSeconds = plugin.getInt("arena.cooldown_max_seconds");
+        long delayTicks = ThreadLocalRandom.current().nextLong(minSeconds, maxSeconds + 1) * 20L;
         availabilityTask = Bukkit.getScheduler().runTaskLater(plugin, this::makeAvailable, delayTicks);
     }
 

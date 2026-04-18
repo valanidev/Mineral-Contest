@@ -1,26 +1,34 @@
 package dev.valani.mineralcontest.listeners;
 
+import dev.valani.mineralcontest.Main;
+import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.game.Team;
+import dev.valani.mineralcontest.game.kits.KitBase;
 import dev.valani.mineralcontest.managers.GameManager;
+import dev.valani.mineralcontest.managers.KitManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
-import java.util.Optional;
 
 public class PlayerDeathListener implements Listener {
 
+    private final Main plugin;
     private final GameManager gameManager;
+    private final KitManager kitManager;
     private final List<Material> allowedDrops = List.of(Material.DIAMOND, Material.IRON_INGOT, Material.GOLD_INGOT, Material.EMERALD);
 
-    public PlayerDeathListener(GameManager gameManager) {
+    public PlayerDeathListener(Main plugin, GameManager gameManager, KitManager kitManager) {
+        this.plugin = plugin;
         this.gameManager = gameManager;
+        this.kitManager = kitManager;
     }
 
     @EventHandler
@@ -38,6 +46,15 @@ public class PlayerDeathListener implements Listener {
         } else {
             event.setDeathMessage(playerColor + player.getName() + " §6est mort.");
         }
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        if (!gameManager.isState(GameState.STARTED)) return;
+        Player player = event.getPlayer();
+        KitBase kit = kitManager.getKit(player);
+        if (kit == null) return;
+        Bukkit.getScheduler().runTaskLater(plugin, () -> kit.apply(player), 1L);
     }
 
 }

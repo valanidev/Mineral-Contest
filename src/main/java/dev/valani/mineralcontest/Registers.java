@@ -32,6 +32,8 @@ public class Registers {
         plugin.getCommand("kit").setExecutor(new CommandKit(plugin, kitSelectorMenu, gameManager));
 
         CommandArenaChest arenaChestCmd = new CommandArenaChest(plugin, arenaFile);
+        arenaChestCmd.setGameManager(gameManager);
+        gameManager.setArenaChestCommand(arenaChestCmd);
         CommandMineralContest mineralContestCmd = new CommandMineralContest(plugin, gameManager);
         plugin.getCommand("mineralcontest").setExecutor(mineralContestCmd);
         plugin.getCommand("arenachest").setExecutor(arenaChestCmd);
@@ -39,7 +41,7 @@ public class Registers {
         pm.registerEvents(new TeamSelectorListener(gameManager, teamSelectorMenu), plugin);
         pm.registerEvents(new KitSelectorListener(gameManager, kitManager, kitSelectorMenu), plugin);
         pm.registerEvents(new PlayerTakeDamageListener(gameManager), plugin);
-        pm.registerEvents(new PlayerDeathListener(gameManager), plugin);
+        pm.registerEvents(new PlayerDeathListener(plugin, gameManager, kitManager), plugin);
 
         pm.registerEvents(new ChatListener(gameManager), plugin);
         pm.registerEvents(new ArenaChestListener(plugin, arenaChestCmd), plugin);
