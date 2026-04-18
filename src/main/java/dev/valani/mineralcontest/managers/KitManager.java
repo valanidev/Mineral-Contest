@@ -13,7 +13,8 @@ public class KitManager {
 
     public static final List<KitBase> KITS = List.of(
             new KitMiner(),
-            new KitBarbarian()
+            new KitBarbarian(),
+            new KitAgile()
     );
 
     private final Map<UUID, KitBase> playerKits = new HashMap<>();
@@ -39,10 +40,11 @@ public class KitManager {
     }
 
     public void resetAll() {
-        playerKits.forEach((uuid, kit) -> {
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null) kit.remove(player);
-        });
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            for (KitBase kit : KITS) {
+                kit.remove(player);
+            }
+        }
         playerKits.clear();
     }
 }

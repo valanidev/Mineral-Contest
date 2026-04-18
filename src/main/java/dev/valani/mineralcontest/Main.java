@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Main extends JavaPlugin {
     private String prefix;
+    private Registers registers;
 
     @Override
     public void onEnable() {
@@ -16,11 +17,12 @@ public class Main extends JavaPlugin {
                 getConfig().getString("plugin.prefix", "[MineralContest] "));
         Bukkit.getConsoleSender().sendMessage(getPrefix() + getString("plugin.enabled"));
 
-        new Registers(this);
+        registers = new Registers(this);
     }
 
     @Override
     public void onDisable() {
+        if (registers != null) registers.getKitManager().resetAll();
         Bukkit.getConsoleSender().sendMessage(getPrefix() + getString("plugin.disabled"));
     }
 

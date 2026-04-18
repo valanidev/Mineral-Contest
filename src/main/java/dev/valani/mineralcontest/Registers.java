@@ -17,13 +17,14 @@ public class Registers {
 
     private final Main plugin;
     private final PluginManager pm;
+    private final KitManager kitManager;
 
     public Registers(Main plugin) {
         this.plugin = plugin;
         this.pm = Bukkit.getPluginManager();
 
         GameManager gameManager = new GameManager(plugin);
-        KitManager kitManager = new KitManager();
+        kitManager = new KitManager();
         TeamSelectorMenu teamSelectorMenu = new TeamSelectorMenu(gameManager);
         KitSelectorMenu kitSelectorMenu = new KitSelectorMenu(kitManager);
         FileManager arenaFile = new FileManager(plugin, "arena.yml");
@@ -46,6 +47,10 @@ public class Registers {
         pm.registerEvents(new ChatListener(gameManager), plugin);
         pm.registerEvents(new ArenaChestListener(plugin, arenaChestCmd), plugin);
         pm.registerEvents(new MinerKitListener(kitManager), plugin);
+    }
+
+    public KitManager getKitManager() {
+        return kitManager;
     }
 
 }

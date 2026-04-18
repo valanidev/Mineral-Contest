@@ -4,7 +4,8 @@
       "Bash(xargs grep:*)",
       "Bash(find /c/Users/valen/IdeaProjects/mineralcontest/src/main/java -type f -name \"*.java\" -exec grep -l \"open\\\\|close\\\\|available\\\\|Particle\" {} \\\\;)",
       "Bash(find /c/Users/valen/IdeaProjects/mineralcontest/src -type f \\\\\\( -name \"*.java\" -o -name \"*.yml\" \\\\\\) -exec grep -l -i \"chest\\\\|coffre\" {} \\\\;)",
-      "Bash(find /c/Users/valen/IdeaProjects/mineralcontest -type f -name \"*.java\" -exec basename {} \\\\;)"
+      "Bash(find /c/Users/valen/IdeaProjects/mineralcontest -type f -name \"*.java\" -exec basename {} \\\\;)",
+      "Bash(find /c/Users/valen/IdeaProjects/mineralcontest/src -name \"*.java\" -type f -exec grep -l \"BlockDamageEvent\\\\|PlayerItemDamageEvent\" {} \\\\;)"
     ]
   }
 }
