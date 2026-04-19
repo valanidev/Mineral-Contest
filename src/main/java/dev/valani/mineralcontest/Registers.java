@@ -1,15 +1,13 @@
 package dev.valani.mineralcontest;
 
 import dev.valani.mineralcontest.commands.CommandArenaChest;
+import dev.valani.mineralcontest.commands.CommandChat;
 import dev.valani.mineralcontest.commands.CommandKit;
-import dev.valani.mineralcontest.commands.CommandMineralContest;
 import dev.valani.mineralcontest.commands.CommandTeam;
 import dev.valani.mineralcontest.listeners.*;
 import dev.valani.mineralcontest.managers.GameManager;
-import dev.valani.mineralcontest.managers.KitManager;
 import dev.valani.mineralcontest.menus.KitSelectorMenu;
 import dev.valani.mineralcontest.menus.TeamSelectorMenu;
-import dev.valani.mineralcontest.utils.FileManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 
@@ -26,6 +24,7 @@ public class Registers {
         plugin.getCommand("arenachest").setExecutor(new CommandArenaChest(plugin, gameManager.getArenaManager()));
         plugin.getCommand("team").setExecutor(new CommandTeam(plugin, teamSelectorMenu, gameManager));
         plugin.getCommand("kit").setExecutor(new CommandKit(plugin, kitSelectorMenu, gameManager));
+        plugin.getCommand("c").setExecutor(new CommandChat(plugin, gameManager.getTeamManager()));
 
         pm.registerEvents(new TeamSelectorListener(gameManager, gameManager.getTeamManager(), teamSelectorMenu), plugin);
         pm.registerEvents(new ArenaChestListener(plugin, gameManager.getArenaManager()), plugin);
@@ -33,11 +32,11 @@ public class Registers {
         pm.registerEvents(new ChatListener(gameManager.getTeamManager()), plugin);
         pm.registerEvents(new PreGameListener(gameManager), plugin);
         pm.registerEvents(new PlayerTakeDamageListener(gameManager.getTeamManager()), plugin);
+        pm.registerEvents(new EnchantmentTableListener(), plugin);
+        pm.registerEvents(new PlayerJoinListener(), plugin);
 
 //        plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest(plugin, gameManager));
-//
 //        pm.registerEvents(new PlayerDeathListener(plugin, gameManager, gameManager.getTeamManager(), kitManager), plugin);
-//
 //        pm.registerEvents(new MinerKitListener(kitManager), plugin);
 //        TODO: Ajouter un chat privé
     }

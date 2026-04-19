@@ -14,3 +14,5 @@ commands:
     description: "Sélectionner un kit"
   team:
     description: "Sélectionner une équipe"
+  c:
+    description: "Commande de chat privé"

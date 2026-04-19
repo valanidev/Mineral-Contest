@@ -20,8 +20,9 @@ public class PreGameListener implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
+        if (!(event.getEntity() instanceof Player player)) return;
         if (gameManager.isState(GameState.STARTED)) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
         event.setCancelled(true);
     }
 
