@@ -35,10 +35,10 @@ public class CommandMineralContest implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "start" -> {
-                gameManager.start();
-
-            }
+//            case "start" -> {
+//                gameManager.start();
+//
+//            }
             case "stop" -> {
                 gameManager.end();
             }

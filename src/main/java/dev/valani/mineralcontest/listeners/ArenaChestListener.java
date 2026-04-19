@@ -2,6 +2,7 @@ package dev.valani.mineralcontest.listeners;
 
 import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.commands.CommandArenaChest;
+import dev.valani.mineralcontest.managers.ArenaManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,29 +28,35 @@ import java.util.Map;
 
 public class ArenaChestListener implements Listener {
 
-    private static final int ANIMATION_TICKS = 100; // 5 secondes
-    private static final int ANIMATION_PERIOD = 4;  // rafraîchissement toutes les 4 ticks
+    private static final int ANIMATION_TICKS = 100;
+    private static final int ANIMATION_PERIOD = 4;
 
     private final Main plugin;
-    private final CommandArenaChest arenaChestCommand;
+    private final ArenaManager arenaManager;
     private final Inventory arenaChestInventory;
     private final ItemStack redPane;
     private final ItemStack greenPane;
     private BukkitTask animationTask;
     private Player animatingPlayer;
 
-    public ArenaChestListener(Main plugin, CommandArenaChest arenaChestCommand) {
+    public ArenaChestListener(Main plugin, ArenaManager arenaManager) {
         this.plugin = plugin;
-        this.arenaChestCommand = arenaChestCommand;
-        this.arenaChestInventory = Bukkit.createInventory(null, 27, "Arena Chest");
+        this.arenaManager = arenaManager;
+        this.arenaChestInventory = Bukkit.createInventory(null, 27, "§6§lArena Chest");
 
         this.redPane = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta redMeta = this.redPane.getItemMeta();
-        if (redMeta != null) { redMeta.setDisplayName(" "); this.redPane.setItemMeta(redMeta); }
+        if (redMeta != null) {
+            redMeta.setDisplayName("§r");
+            this.redPane.setItemMeta(redMeta);
+        }
 
         this.greenPane = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
         ItemMeta greenMeta = this.greenPane.getItemMeta();
-        if (greenMeta != null) { greenMeta.setDisplayName(" "); this.greenPane.setItemMeta(greenMeta); }
+        if (greenMeta != null) {
+            greenMeta.setDisplayName("§r");
+            this.greenPane.setItemMeta(greenMeta);
+        }
     }
 
     @EventHandler
@@ -58,27 +65,28 @@ public class ArenaChestListener implements Listener {
         Block clickedBlock = event.getClickedBlock();
         if (clickedBlock == null) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
-        Material expectedMaterial = arenaChestCommand.getCachedChestMaterial();
+        Material expectedMaterial = arenaManager.getChestMaterial();
         if (expectedMaterial == null || clickedBlock.getType() != expectedMaterial) return;
-        Location chestLoc = arenaChestCommand.getCachedChestLocation();
+        Location chestLoc = arenaManager.getChestLocation();
         if (chestLoc == null) return;
         if (!clickedBlock.getLocation().equals(chestLoc.getBlock().getLocation())) return;
 
         event.setCancelled(true);
-
         Player player = event.getPlayer();
 
-        if (!arenaChestCommand.isChestAvailable()) {
+        if (!arenaManager.isChestAvailable()) {
+            // Si un joueur est en train d'ouvrir le coffre on met un message custom, sinon il est indisponible
             String key = animatingPlayer != null ? "arena.chest_in_use" : "arena.chest_unavailable";
             player.sendMessage(plugin.getString(key));
             return;
         }
 
+        // Si c'est un coffre on joue son animation
         if (clickedBlock.getState() instanceof Chest chest) {
             chest.open();
         }
 
-        arenaChestCommand.lockForAnimation();
+        arenaManager.lockForAnimation();
         startAnimation(player);
     }
 
@@ -123,7 +131,7 @@ public class ArenaChestListener implements Listener {
         animationTask = null;
         animatingPlayer = null;
         arenaChestInventory.clear();
-        arenaChestCommand.onChestLooted();
+        arenaManager.onChestLooted();
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
         player.closeInventory();
         giveRewards(player);
@@ -137,7 +145,7 @@ public class ArenaChestListener implements Listener {
         animationTask = null;
         animatingPlayer = null;
         arenaChestInventory.clear();
-        arenaChestCommand.unlockFromAnimation();
+        arenaManager.unlockFromAnimation();
     }
 
     private void giveRewards(Player player) {
@@ -161,7 +169,7 @@ public class ArenaChestListener implements Listener {
             cancelAnimation();
         }
 
-        Location chestLoc = arenaChestCommand.getCachedChestLocation();
+        Location chestLoc = arenaManager.getChestLocation();
         if (chestLoc == null) return;
         if (chestLoc.getBlock().getState() instanceof Chest chest) {
             chest.close();
@@ -176,7 +184,7 @@ public class ArenaChestListener implements Listener {
     }
 
     private boolean isArenaChest(Block block) {
-        Location chestLoc = arenaChestCommand.getCachedChestLocation();
+        Location chestLoc = arenaManager.getChestLocation();
         if (chestLoc == null) return false;
         return block.getLocation().equals(chestLoc.getBlock().getLocation());
     }

@@ -48,7 +48,7 @@ public class Drop {
             int max = ((Number) entry.get("max")).intValue();
             Material material = Material.getMaterial(materialName);
             if (material == null) {
-                plugin.consoleError("drop.loot: matériau inconnu '" + materialName + "'");
+                Bukkit.getConsoleSender().sendMessage("§cdrop.loot: matériau inconnu '" + materialName + "'");
                 continue;
             }
             int amount = rng.nextInt(min, max + 1);

@@ -6,6 +6,7 @@ import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.game.kits.KitBase;
 import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.managers.KitManager;
+import dev.valani.mineralcontest.managers.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -22,12 +23,14 @@ public class PlayerDeathListener implements Listener {
 
     private final Main plugin;
     private final GameManager gameManager;
+    private final TeamManager teamManager;
     private final KitManager kitManager;
     private final List<Material> allowedDrops = List.of(Material.DIAMOND, Material.IRON_INGOT, Material.GOLD_INGOT, Material.EMERALD);
 
-    public PlayerDeathListener(Main plugin, GameManager gameManager, KitManager kitManager) {
+    public PlayerDeathListener(Main plugin, GameManager gameManager, TeamManager teamManager, KitManager kitManager) {
         this.plugin = plugin;
         this.gameManager = gameManager;
+        this.teamManager = teamManager;
         this.kitManager = kitManager;
     }
 
@@ -39,9 +42,9 @@ public class PlayerDeathListener implements Listener {
         items.removeIf(item -> !allowedDrops.contains(item.getType()));
         player.sendMessage("§cVous êtes mort et avez perdu vos minerais...");
 
-        ChatColor playerColor = gameManager.getPlayerTeam(player).map(Team::getColor).orElse(ChatColor.WHITE);
+        ChatColor playerColor = teamManager.getPlayerTeam(player).map(Team::getColor).orElse(ChatColor.WHITE);
         if (killer != null) {
-            ChatColor killerColor = gameManager.getPlayerTeam(killer).map(Team::getColor).orElse(ChatColor.WHITE);
+            ChatColor killerColor = teamManager.getPlayerTeam(killer).map(Team::getColor).orElse(ChatColor.WHITE);
             event.setDeathMessage(playerColor + player.getName() + " §6a été tué par " + killerColor + killer.getName());
         } else {
             event.setDeathMessage(playerColor + player.getName() + " §6est mort.");

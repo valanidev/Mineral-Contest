@@ -1,5 +1,8 @@
 package dev.valani.mineralcontest;
 
+import dev.valani.mineralcontest.managers.GameManager;
+import dev.valani.mineralcontest.managers.KitManager;
+import dev.valani.mineralcontest.managers.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,12 +25,8 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (registers != null) registers.getKitManager().resetAll();
+//        if (registers != null) registers.getKitManager().resetAll();
         Bukkit.getConsoleSender().sendMessage(getPrefix() + getString("plugin.disabled"));
-    }
-
-    public void consoleError(String message) {
-        Bukkit.getConsoleSender().sendMessage(getPrefix() + ChatColor.RED + message);
     }
 
     public String getPrefix() {
@@ -36,8 +35,8 @@ public class Main extends JavaPlugin {
 
     public String getString(String key) {
         String value = getConfig().getString(key);
-        if(value == null) {
-            consoleError("No config value for " + key);
+        if (value == null) {
+            Bukkit.getConsoleSender().sendMessage("§cNo config value for " + key);
             return "§cMissing key '" + key + "'...";
         }
         return ChatColor.translateAlternateColorCodes('&', value);

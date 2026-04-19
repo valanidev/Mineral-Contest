@@ -15,42 +15,38 @@ import org.bukkit.plugin.PluginManager;
 
 public class Registers {
 
-    private final Main plugin;
-    private final PluginManager pm;
-    private final KitManager kitManager;
+//    private final KitManager kitManager;
 
     public Registers(Main plugin) {
-        this.plugin = plugin;
-        this.pm = Bukkit.getPluginManager();
+        PluginManager pm = Bukkit.getPluginManager();
 
         GameManager gameManager = new GameManager(plugin);
-        kitManager = new KitManager();
-        TeamSelectorMenu teamSelectorMenu = new TeamSelectorMenu(gameManager);
-        KitSelectorMenu kitSelectorMenu = new KitSelectorMenu(kitManager);
-        FileManager arenaFile = new FileManager(plugin, "arena.yml");
-
-        plugin.getCommand("team").setExecutor(new CommandTeam(plugin, teamSelectorMenu, gameManager));
-        plugin.getCommand("kit").setExecutor(new CommandKit(plugin, kitSelectorMenu, gameManager));
-
-        CommandArenaChest arenaChestCmd = new CommandArenaChest(plugin, arenaFile);
-        arenaChestCmd.setGameManager(gameManager);
-        gameManager.setArenaChestCommand(arenaChestCmd);
-        CommandMineralContest mineralContestCmd = new CommandMineralContest(plugin, gameManager);
-        plugin.getCommand("mineralcontest").setExecutor(mineralContestCmd);
-        plugin.getCommand("arenachest").setExecutor(arenaChestCmd);
-
-        pm.registerEvents(new TeamSelectorListener(gameManager, teamSelectorMenu), plugin);
-        pm.registerEvents(new KitSelectorListener(gameManager, kitManager, kitSelectorMenu), plugin);
-        pm.registerEvents(new PlayerTakeDamageListener(gameManager), plugin);
-        pm.registerEvents(new PlayerDeathListener(plugin, gameManager, kitManager), plugin);
-
-        pm.registerEvents(new ChatListener(gameManager), plugin);
-        pm.registerEvents(new ArenaChestListener(plugin, arenaChestCmd), plugin);
-        pm.registerEvents(new MinerKitListener(kitManager), plugin);
+//        kitManager = new KitManager();
+//        TeamSelectorMenu teamSelectorMenu = new TeamSelectorMenu(gameManager.getTeamManager());
+//        KitSelectorMenu kitSelectorMenu = new KitSelectorMenu(kitManager);
+//        FileManager arenaFile = new FileManager(plugin, "arena.yml");
+//
+//        plugin.getCommand("team").setExecutor(new CommandTeam(plugin, teamSelectorMenu, gameManager));
+//        plugin.getCommand("kit").setExecutor(new CommandKit(plugin, kitSelectorMenu, gameManager));
+//
+//        arenaChestCmd.setGameManager(gameManager);
+//        gameManager.setArenaChestCommand(arenaChestCmd);
+//        CommandMineralContest mineralContestCmd = new CommandMineralContest(plugin, gameManager);
+//        plugin.getCommand("mineralcontest").setExecutor(mineralContestCmd);
+        plugin.getCommand("arenachest").setExecutor(new CommandArenaChest(plugin, gameManager.getArenaManager()));
+//
+//        pm.registerEvents(new TeamSelectorListener(gameManager, gameManager.getTeamManager(), teamSelectorMenu), plugin);
+//        pm.registerEvents(new KitSelectorListener(gameManager, kitManager, kitSelectorMenu), plugin);
+//        pm.registerEvents(new PlayerTakeDamageListener(gameManager, gameManager.getTeamManager()), plugin);
+//        pm.registerEvents(new PlayerDeathListener(plugin, gameManager, gameManager.getTeamManager(), kitManager), plugin);
+//
+//        pm.registerEvents(new ChatListener(gameManager.getTeamManager()), plugin);
+        pm.registerEvents(new ArenaChestListener(plugin, gameManager.getArenaManager()), plugin);
+//        pm.registerEvents(new MinerKitListener(kitManager), plugin);
     }
 
-    public KitManager getKitManager() {
-        return kitManager;
-    }
+//    public KitManager getKitManager() {
+//        return kitManager;
+//    }
 
 }

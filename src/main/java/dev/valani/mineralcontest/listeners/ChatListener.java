@@ -1,7 +1,7 @@
 package dev.valani.mineralcontest.listeners;
 
-import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.game.Team;
+import dev.valani.mineralcontest.managers.TeamManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,16 +13,16 @@ import java.util.Optional;
 
 public class ChatListener implements Listener {
 
-    private final GameManager gameManager;
+    private final TeamManager teamManager;
 
-    public ChatListener(GameManager gameManager) {
-        this.gameManager = gameManager;
+    public ChatListener(TeamManager teamManager) {
+        this.teamManager = teamManager;
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        Optional<Team> teamOpt = gameManager.getPlayerTeam(player);
+        Optional<Team> teamOpt = teamManager.getPlayerTeam(player);
 
         if (teamOpt.isEmpty()) return;
 

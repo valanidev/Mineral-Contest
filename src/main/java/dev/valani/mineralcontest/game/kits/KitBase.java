@@ -30,4 +30,9 @@ public abstract class KitBase {
     public Material getMaterial() {
         return material;
     }
+
+    @Override
+    public String toString() {
+        return displayName;
+    }
 }

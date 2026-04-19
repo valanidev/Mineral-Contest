@@ -54,14 +54,11 @@ public class Team {
 
     public boolean addMember(Player player) {
         if (isFull() || hasMember(player)) return false;
-        members.add(player.getUniqueId());
-        return true;
+        return members.add(player.getUniqueId());
     }
 
     public boolean removeMember(Player player) {
-        if (!hasMember(player)) return false;
-        members.remove(player.getUniqueId());
-        return true;
+        return members.remove(player.getUniqueId());
     }
 
     public void clear() {
@@ -74,5 +71,10 @@ public class Team {
 
     public String getDisplayName() {
         return color + name;
+    }
+
+    @Override
+    public String toString() {
+        return getDisplayName() + " (" + size() + "/" + getMaxPlayers() + ")";
     }
 }

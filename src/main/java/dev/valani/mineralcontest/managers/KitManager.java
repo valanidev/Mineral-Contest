@@ -1,5 +1,6 @@
 package dev.valani.mineralcontest.managers;
 
+import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.kits.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,6 +11,12 @@ import java.util.Map;
 import java.util.UUID;
 
 public class KitManager {
+
+    private final Main plugin;
+
+    public KitManager(Main plugin) {
+        this.plugin = plugin;
+    }
 
     public static final List<KitBase> KITS = List.of(
             new KitMiner(),
@@ -47,5 +54,16 @@ public class KitManager {
             }
         }
         playerKits.clear();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("§r§nKits§7: §r");
+        KITS.forEach(
+                kit -> builder
+                        .append(kit.toString())
+                        .append("§r, "));
+        builder.delete(builder.length() - 2, builder.length());
+        return builder.toString();
     }
 }

@@ -1,8 +1,10 @@
 package dev.valani.mineralcontest.listeners;
 
 import dev.valani.mineralcontest.game.GameResult;
+import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.managers.GameManager;
+import dev.valani.mineralcontest.managers.TeamManager;
 import dev.valani.mineralcontest.menus.TeamSelectorMenu;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -15,10 +17,12 @@ import java.util.List;
 public class TeamSelectorListener implements Listener {
 
     private final GameManager gameManager;
+    private final TeamManager teamManager;
     private final TeamSelectorMenu menu;
 
-    public TeamSelectorListener(GameManager gameManager, TeamSelectorMenu menu) {
+    public TeamSelectorListener(GameManager gameManager, TeamManager teamManager, TeamSelectorMenu menu) {
         this.gameManager = gameManager;
+        this.teamManager = teamManager;
         this.menu = menu;
     }
 
@@ -30,12 +34,18 @@ public class TeamSelectorListener implements Listener {
         if (!(event.getWhoClicked() instanceof Player player)) return;
         if (event.getCurrentItem() == null) return;
 
+        if (!gameManager.isState(GameState.WAITING)) {
+            player.sendMessage("§cLa partie a déjà commencé !");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            return;
+        }
+
         int slot = event.getSlot();
-        List<Team> teams = gameManager.getTeams();
+        List<Team> teams = teamManager.getTeams();
         if (slot >= teams.size()) return;
 
         Team target = teams.get(slot);
-        GameResult result = gameManager.joinTeam(player, target);
+        GameResult result = teamManager.joinTeam(player, target);
 
         switch (result) {
             case SUCCESS -> {
@@ -46,10 +56,6 @@ public class TeamSelectorListener implements Listener {
             }
             case TEAM_FULL -> {
                 player.sendMessage("§cCette équipe est pleine !");
-                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-            }
-            case GAME_ALREADY_STARTED -> {
-                player.sendMessage("§cLa partie a déjà commencé !");
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             }
             case ALREADY_IN_TEAM -> {

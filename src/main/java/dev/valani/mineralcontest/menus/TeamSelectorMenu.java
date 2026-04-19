@@ -1,7 +1,7 @@
 package dev.valani.mineralcontest.menus;
 
 import dev.valani.mineralcontest.game.Team;
-import dev.valani.mineralcontest.managers.GameManager;
+import dev.valani.mineralcontest.managers.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -13,14 +13,14 @@ import java.util.List;
 public class TeamSelectorMenu {
 
     private static final String TITLE = "§8Choisir une équipe";
-    private final GameManager gameManager;
+    private final TeamManager teamManager;
 
-    public TeamSelectorMenu(GameManager gameManager) {
-        this.gameManager = gameManager;
+    public TeamSelectorMenu(TeamManager teamManager) {
+        this.teamManager = teamManager;
     }
 
     public void open(Player player) {
-        List<Team> teams = gameManager.getTeams();
+        List<Team> teams = teamManager.getTeams();
         int size = roundToMultipleOf9(teams.size());
         Inventory inv = Bukkit.createInventory(null, size, TITLE);
 
