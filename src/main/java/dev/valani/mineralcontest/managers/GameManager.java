@@ -17,24 +17,18 @@ public class GameManager {
     private GameState state;
 
     private final ArenaManager arenaManager;
+    private final DropManager dropManager;
     private final TeamManager teamManager;
     private final KitManager kitManager;
 
     private BukkitTask gameEndTimer;
-    private BukkitTask dropTimer;
 
     public GameManager(Main plugin) {
         this.plugin = plugin;
         this.arenaManager = new ArenaManager(plugin, this);
+        this.dropManager = new DropManager(plugin, this);
         this.teamManager = new TeamManager(plugin);
         this.kitManager = new KitManager(plugin);
-
-        Bukkit.getOnlinePlayers().forEach(player -> {
-                    player.sendMessage(teamManager.toString());
-                    player.sendMessage(kitManager.toString());
-                }
-        );
-
         reset();
     }
 
@@ -55,7 +49,7 @@ public class GameManager {
         int durationSeconds = plugin.getInt("game.duration_seconds");
         gameEndTimer = Bukkit.getScheduler().runTaskLater(plugin, this::end, durationSeconds * 20L);
 
-        scheduleNextDrop();
+        dropManager.scheduleNextDrop();
 
         if (arenaManager != null && arenaManager.getChestLocation() != null) {
             arenaManager.scheduleAvailability();
@@ -69,7 +63,7 @@ public class GameManager {
 
         state = GameState.ENDED;
         cancelGameTimer();
-        cancelDropTimer();
+        dropManager.cancelDropTimer();
         Bukkit.broadcastMessage(plugin.getString("game.ended"));
 
         return GameResult.SUCCESS;
@@ -78,7 +72,7 @@ public class GameManager {
     public void reset() {
         state = GameState.WAITING;                              // Reset game state to waiting
         cancelGameTimer();                                          // Cancel the end timer
-        cancelDropTimer();                                      // Cancel the drop timer
+        dropManager.cancelDropTimer();                              // Cancel the drop timer
         this.teamManager.clearAll();                             // Clear all teams
         Bukkit.getOnlinePlayers().forEach(p -> {
             p.setDisplayName(p.getName());
@@ -92,33 +86,6 @@ public class GameManager {
             gameEndTimer.cancel();
             gameEndTimer = null;
         }
-    }
-
-    private void scheduleNextDrop() {
-        long minSeconds = plugin.getInt("drop.min_interval_seconds");
-        long maxSeconds = plugin.getInt("drop.max_interval_seconds");
-        long delayTicks = ThreadLocalRandom.current().nextLong(minSeconds, maxSeconds + 1) * 20L;
-        dropTimer = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (!isState(GameState.STARTED)) return;
-            new Drop(plugin);
-            Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 1.0f));
-            scheduleNextDrop();
-        }, delayTicks);
-    }
-
-    private void cancelDropTimer() {
-        if (dropTimer != null && !dropTimer.isCancelled()) {
-            dropTimer.cancel();
-            dropTimer = null;
-        }
-    }
-
-    public TeamManager getTeamManager() {
-        return teamManager;
-    }
-
-    public GameState getState() {
-        return state;
     }
 
     public boolean isState(GameState s) {

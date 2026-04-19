@@ -8,8 +8,8 @@ plugin:
 
 arena:
   chest_block: 'CHEST'
-  cooldown_min_seconds: 0
-  cooldown_max_seconds: 60
+  cooldown_min_seconds: 300
+  cooldown_max_seconds: 600
   chest_removed: "&aCoffre d'arène supprimé."
   chest_placed: "&aCoffre d'arène placé."
   chest_not_placed: "&cLe coffre n'est pas encore placé."
@@ -58,8 +58,8 @@ game:
   reset: "&7La partie a été réinitialisée."
 
 drop:
-  min_interval_seconds: 60
-  max_interval_seconds: 300
+  min_interval_seconds: 300
+  max_interval_seconds: 900
   chest_placed: "&6Un drop est apparu en &e{X}&6, &e{Y}&6, &e{Z}&6 !"
   loot:
     - material: DIAMOND

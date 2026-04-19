@@ -82,7 +82,7 @@ public class ArenaManager {
     private void makeAvailable() {
         cancelRecoveryTask();
         if (gameManager != null && !gameManager.isState(GameState.STARTED)) {
-            Bukkit.getConsoleSender().sendMessage("§cGame is not started yet (or gameManager is null)");
+            Bukkit.getConsoleSender().sendMessage("§cLa partie n'a pas encore commencé.");
             return;
         }
         chestAvailable = true;
