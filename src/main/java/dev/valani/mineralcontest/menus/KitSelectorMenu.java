@@ -2,6 +2,7 @@ package dev.valani.mineralcontest.menus;
 
 import dev.valani.mineralcontest.game.kits.KitBase;
 import dev.valani.mineralcontest.managers.KitManager;
+import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -24,7 +25,7 @@ public class KitSelectorMenu {
 
     public void open(Player player) {
         List<KitBase> kits = KitManager.KITS;
-        int size = (int) Math.ceil(kits.size() / 9.0) * 9;
+        int size = Utils.roundToMultipleOf9(kits.size());
         Inventory inv = Bukkit.createInventory(null, size, TITLE);
 
         for (int i = 0; i < kits.size(); i++) {
@@ -37,14 +38,14 @@ public class KitSelectorMenu {
     private ItemStack buildKitItem(KitBase kit, Player player) {
         ItemStack item = new ItemStack(kit.getMaterial());
         ItemMeta meta = item.getItemMeta();
-
+        if (meta == null) return item;
 
         boolean selected = kitManager.hasKit(player, kit);
 
-        meta.setDisplayName((selected ? "§a✔ " : "§f") + kit.getDisplayName());
+        meta.setDisplayName((selected ? "§a✔ " : "§7") + kit.getDisplayName());
         List<String> lore = new ArrayList<>(Arrays.asList(kit.getDescription().split("\n")));
         lore.add("");
-        lore.add(selected ? "§a§lKit actuel" : "§eCliquer pour sélectionner");
+        lore.add(selected ? "§a§lKit actuel" : "§6Clique pour sélectionner");
         meta.setLore(lore);
 
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
