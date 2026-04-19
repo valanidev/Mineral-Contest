@@ -3,23 +3,26 @@ package dev.valani.mineralcontest.managers;
 import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.GameResult;
 import dev.valani.mineralcontest.game.Team;
+import dev.valani.mineralcontest.utils.FileManager;
 import dev.valani.mineralcontest.utils.Utils;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class TeamManager {
     private final Main plugin;
     private final List<Team> teams;
+    private final FileManager teamFile;
+
+    Map<Team, Location> teamChestLocations;
 
     public TeamManager(Main plugin) {
         this.plugin = plugin;
         this.teams = loadTeamsFromConfig();
+        this.teamFile = new FileManager(plugin, "team.yml");
+        this.teamChestLocations = new HashMap<>();
     }
 
     private List<Team> loadTeamsFromConfig() {
@@ -62,6 +65,30 @@ public class TeamManager {
 
     public void clearAll() {
         teams.forEach(Team::clear);
+    }
+
+    public void setTeamChest(Location loc, Team team) {
+        if (loc == null || team == null) return;
+        World world = loc.getWorld();
+        if (world == null) return;
+
+        String key = "team.chest." + team.getName();
+        teamFile.getConfig().set(key + ".world", world.getName());
+        teamFile.getConfig().set(key + ".x", loc.getBlockX());
+        teamFile.getConfig().set(key + ".y", loc.getBlockY());
+        teamFile.getConfig().set(key + ".z", loc.getBlockZ());
+        teamFile.save();
+
+        teamChestLocations.put(team, loc);
+    }
+
+    public Location getTeamChestLocation(Team team) {
+        if (team == null) return null;
+        return teamChestLocations.get(team);
+    }
+
+    public boolean isTeamChest(Location loc) {
+        return teamChestLocations.containsValue(loc);
     }
 
     @Override

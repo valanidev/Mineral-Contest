@@ -2,6 +2,7 @@ package dev.valani.mineralcontest.managers;
 
 import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.GameState;
+import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.utils.FileManager;
 import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.*;

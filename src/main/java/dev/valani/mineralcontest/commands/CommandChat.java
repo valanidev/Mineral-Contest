@@ -43,7 +43,7 @@ public class CommandChat implements CommandExecutor {
         for (UUID uuid : team.getMembers()) {
             Player target = Bukkit.getPlayer(uuid);
             if (target == null) continue;
-            target.sendMessage("§7[" + team.getDisplayName() + "§7] §r" + player.getName() + "§7: " + team.getColor() + String.join(" ", args));
+            target.sendMessage("§6§lTEAM §r" + player.getDisplayName() + " §7→ " + team.getColor() + String.join(" ", args));
         }
 
         return true;

@@ -56,6 +56,8 @@ public class PlayerDeathListener implements Listener {
         if (!gameManager.isState(GameState.STARTED)) return;
         Player player = event.getPlayer();
         KitBase kit = kitManager.getKit(player);
+        player.sendMessage("t'es mort big noob");
+        player.sendMessage(kit.toString());
         if (kit == null) return;
         Bukkit.getScheduler().runTaskLater(plugin, () -> kit.apply(player), 1L);
     }

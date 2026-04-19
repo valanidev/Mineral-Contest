@@ -16,3 +16,6 @@ commands:
     description: "Sélectionner une équipe"
   c:
     description: "Commande de chat privé"
+  admin:
+    description: "Commande d'administration"
+    permission: mineralcontest.admin

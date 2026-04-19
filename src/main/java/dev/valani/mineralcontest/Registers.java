@@ -1,9 +1,6 @@
 package dev.valani.mineralcontest;
 
-import dev.valani.mineralcontest.commands.CommandArenaChest;
-import dev.valani.mineralcontest.commands.CommandChat;
-import dev.valani.mineralcontest.commands.CommandKit;
-import dev.valani.mineralcontest.commands.CommandTeam;
+import dev.valani.mineralcontest.commands.*;
 import dev.valani.mineralcontest.listeners.*;
 import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.menus.KitSelectorMenu;
@@ -26,6 +23,8 @@ public class Registers {
         plugin.getCommand("kit").setExecutor(new CommandKit(plugin, kitSelectorMenu, gameManager));
         plugin.getCommand("c").setExecutor(new CommandChat(plugin, gameManager.getTeamManager()));
 
+        plugin.getCommand("admin").setExecutor(new CommandAdmin(plugin, gameManager));
+
         pm.registerEvents(new TeamSelectorListener(gameManager, gameManager.getTeamManager(), teamSelectorMenu), plugin);
         pm.registerEvents(new ArenaChestListener(plugin, gameManager.getArenaManager()), plugin);
         pm.registerEvents(new KitSelectorListener(gameManager, gameManager.getKitManager(), kitSelectorMenu), plugin);
@@ -34,11 +33,11 @@ public class Registers {
         pm.registerEvents(new PlayerTakeDamageListener(gameManager.getTeamManager()), plugin);
         pm.registerEvents(new EnchantmentTableListener(), plugin);
         pm.registerEvents(new PlayerJoinListener(), plugin);
+        pm.registerEvents(new TeamChestListener(gameManager), plugin);
 
-//        plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest(plugin, gameManager));
-//        pm.registerEvents(new PlayerDeathListener(plugin, gameManager, gameManager.getTeamManager(), kitManager), plugin);
+        plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest(plugin, gameManager));
+//        pm.registerEvents(new PlayerDeathListener(plugin, gameManager, gameManager.getTeamManager(), gameManager.getKitManager()), plugin);
 //        pm.registerEvents(new MinerKitListener(kitManager), plugin);
-//        TODO: Ajouter un chat privé
     }
 
 }

@@ -15,6 +15,7 @@ public class Team {
     private final Material material;
     private final int maxPlayers;
     private final List<UUID> members;
+    private int score;
 
     public Team(String name, ChatColor color, Material material, int maxPlayers) {
         this.name = name;
@@ -22,6 +23,7 @@ public class Team {
         this.material = material;
         this.maxPlayers = maxPlayers;
         this.members = new ArrayList<>();
+        score = 0;
     }
 
     public String getName() {
@@ -38,6 +40,18 @@ public class Team {
 
     public int getMaxPlayers() {
         return maxPlayers;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score += score;
+    }
+
+    public void addScore(int score) {
+        this.score += score;
     }
 
     public List<UUID> getMembers() {

@@ -5,6 +5,7 @@ plugin:
   only_player_command: "&cSeul un joueur peut utiliser cette commande."
   not_enough_args: "&cCommande incomplète..."
   no_such_args: "&cArgument inconnu..."
+  no_such_team: "&cAucune équipe avec ce nom n'a été trouvée !"
 
 arena:
   chest_block: 'CHEST'
