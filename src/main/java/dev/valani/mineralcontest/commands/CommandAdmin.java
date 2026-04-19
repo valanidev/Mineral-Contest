@@ -3,6 +3,7 @@ package dev.valani.mineralcontest.commands;
 import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.managers.GameManager;
+import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -82,14 +83,24 @@ public class CommandAdmin implements CommandExecutor {
                             return false;
                         }
                         Location targetLocation = targetBlock.getLocation();
-                        player.sendMessage("Set arena for team " + team.getName() + " at " + targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
+                        player.sendMessage("§aLe coffre de l'équipe " + team.getDisplayName() + " §aa été placé en §e" + Utils.formatLocation(targetLocation) + "§a.");
                         gameManager.getTeamManager().setTeamChest(targetLocation, team);
                     }
                     case "remove" -> {
-                        player.sendMessage("Remove arena for team");
+                        Location chestLocation = gameManager.getTeamManager().getTeamChestLocation(team);
+                        if (chestLocation == null) {
+                            player.sendMessage("§cLe coffre de l'équipe " + team.getDisplayName() + " §cn'est pas défini.");
+                            return false;
+                        }
+                        player.sendMessage("§aLe coffre de l'équipe " + team.getDisplayName() + " §aa été retiré.");
+                        gameManager.getTeamManager().removeTeamChest(team);
                     }
                     case "view" -> {
-                        player.sendMessage("View arena for team");
+                        Location chestLocation = gameManager.getTeamManager().getTeamChestLocation(team);
+                        if (chestLocation == null)
+                            player.sendMessage("§cLe coffre de l'équipe " + team.getDisplayName() + " §cn'est pas défini.");
+                        else
+                            player.sendMessage("§aLe coffre de l'équipe " + team.getDisplayName() + " §aest situé en §e" + Utils.formatLocation(chestLocation) + "§a.");
                     }
                 }
             }

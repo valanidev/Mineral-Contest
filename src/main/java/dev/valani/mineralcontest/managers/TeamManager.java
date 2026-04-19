@@ -23,6 +23,8 @@ public class TeamManager {
         this.teams = loadTeamsFromConfig();
         this.teamFile = new FileManager(plugin, "team.yml");
         this.teamChestLocations = new HashMap<>();
+
+        loadTeamChests();
     }
 
     private List<Team> loadTeamsFromConfig() {
@@ -41,6 +43,33 @@ public class TeamManager {
         }
 
         return result;
+    }
+
+    private void loadTeamChests() {
+        ConfigurationSection section = teamFile.getConfig().getConfigurationSection("team.chest");
+        if (section == null) return;
+
+        for (String teamName : section.getKeys(false)) {
+            Team team = getTeams().stream()
+                    .filter(t -> t.getName().equalsIgnoreCase(teamName))
+                    .findFirst()
+                    .orElse(null);
+
+            if (team == null) continue;
+
+            String path = "team.chest." + teamName;
+
+            String worldName = teamFile.getConfig().getString(path + ".world", "world");
+            World world = Bukkit.getWorld(worldName);
+            if (world == null) continue;
+
+            int x = teamFile.getConfig().getInt(path + ".x");
+            int y = teamFile.getConfig().getInt(path + ".y");
+            int z = teamFile.getConfig().getInt(path + ".z");
+
+            Location loc = new Location(world, x, y, z);
+            teamChestLocations.put(team, loc);
+        }
     }
 
     public GameResult joinTeam(Player player, Team team) {
@@ -80,6 +109,14 @@ public class TeamManager {
         teamFile.save();
 
         teamChestLocations.put(team, loc);
+    }
+
+    public void removeTeamChest(Team team) {
+        String key = "team.chest." + team.getName();
+        teamFile.getConfig().set(key, null);
+        teamFile.save();
+
+        teamChestLocations.remove(team);
     }
 
     public Location getTeamChestLocation(Team team) {
