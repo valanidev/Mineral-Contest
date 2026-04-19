@@ -12,20 +12,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class PlayerTakeDamageListener implements Listener {
-    private final GameManager gameManager;
     private final TeamManager teamManager;
 
-    public PlayerTakeDamageListener(GameManager gameManager, TeamManager teamManager) {
-        this.gameManager = gameManager;
+    public PlayerTakeDamageListener(TeamManager teamManager) {
         this.teamManager = teamManager;
-    }
-
-    @EventHandler
-    public void onEntityDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
-        if (((Player) event.getEntity()).getGameMode() != GameMode.SURVIVAL) return;
-        if (gameManager.isState(GameState.STARTED)) return;
-        event.setCancelled(true);
     }
 
     @EventHandler

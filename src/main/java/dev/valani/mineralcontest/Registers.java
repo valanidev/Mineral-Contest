@@ -30,14 +30,16 @@ public class Registers {
         pm.registerEvents(new TeamSelectorListener(gameManager, gameManager.getTeamManager(), teamSelectorMenu), plugin);
         pm.registerEvents(new ArenaChestListener(plugin, gameManager.getArenaManager()), plugin);
         pm.registerEvents(new KitSelectorListener(gameManager, gameManager.getKitManager(), kitSelectorMenu), plugin);
+        pm.registerEvents(new ChatListener(gameManager.getTeamManager()), plugin);
+        pm.registerEvents(new PreGameListener(gameManager), plugin);
+        pm.registerEvents(new PlayerTakeDamageListener(gameManager.getTeamManager()), plugin);
 
 //        plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest(plugin, gameManager));
 //
-//        pm.registerEvents(new PlayerTakeDamageListener(gameManager, gameManager.getTeamManager()), plugin);
 //        pm.registerEvents(new PlayerDeathListener(plugin, gameManager, gameManager.getTeamManager(), kitManager), plugin);
 //
-//        pm.registerEvents(new ChatListener(gameManager.getTeamManager()), plugin);
 //        pm.registerEvents(new MinerKitListener(kitManager), plugin);
+//        TODO: Ajouter un chat privé
     }
 
 }
