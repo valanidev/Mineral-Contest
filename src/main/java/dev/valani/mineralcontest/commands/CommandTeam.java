@@ -26,7 +26,6 @@ public class CommandTeam implements CommandExecutor {
             sender.sendMessage(plugin.getString("plugin.only_player_command"));
             return false;
         }
-
         if (!gameManager.isState(GameState.WAITING)) {
             player.sendMessage("§cLa partie a déjà commencé.");
             return false;

@@ -31,4 +31,8 @@ public class Utils {
         return loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ()
                 + " (" + Objects.requireNonNull(loc.getWorld()).getName() + ")";
     }
+
+    public static int roundToMultipleOf9(int n) {
+        return (int) Math.ceil(Math.max(n, 1) / 9.0) * 9;
+    }
 }

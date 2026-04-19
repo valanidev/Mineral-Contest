@@ -2,13 +2,16 @@ package dev.valani.mineralcontest.menus;
 
 import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.managers.TeamManager;
+import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class TeamSelectorMenu {
 
@@ -21,7 +24,7 @@ public class TeamSelectorMenu {
 
     public void open(Player player) {
         List<Team> teams = teamManager.getTeams();
-        int size = roundToMultipleOf9(teams.size());
+        int size = Utils.roundToMultipleOf9(teams.size());
         Inventory inv = Bukkit.createInventory(null, size, TITLE);
 
         for (int i = 0; i < teams.size(); i++) {
@@ -34,21 +37,31 @@ public class TeamSelectorMenu {
     private ItemStack buildTeamItem(Team team, Player player) {
         ItemStack item = new ItemStack(team.getMaterial());
         ItemMeta meta = item.getItemMeta();
+        if (meta == null) return item;
+
+        List<String> lore = new ArrayList<>();
+        lore.add("§7Joueurs : §f" + team.size() + "§7/§f" + team.getMaxPlayers());
+        lore.add("");
+        List<UUID> members = team.getMembers();
+        if (!members.isEmpty()) {
+            lore.add("§7Membres :");
+            for (UUID uuid : members) {
+                Player p = Bukkit.getPlayer(uuid);
+                if (p == null) continue;
+                String name = p.getName();
+                lore.add(" §f" + name);
+            }
+            lore.add("");
+        }
+        lore.add(team.isFull() ? "§cÉquipe pleine" :
+                team.hasMember(player) ? "§a§lÉquipe actuelle" :
+                "§6Clique pour rejoindre");
 
         meta.setDisplayName(team.getDisplayName());
-        meta.setLore(List.of(
-                "§7Joueurs : §f" + team.size() + "§7/§f" + team.getMaxPlayers(),
-                team.isFull() ? "§cÉquipe pleine" :
-                        team.hasMember(player) ? "§aTon équipe actuelle" :
-                        "§eClique pour rejoindre"
-        ));
+        meta.setLore(lore);
 
         item.setItemMeta(meta);
         return item;
-    }
-
-    private int roundToMultipleOf9(int n) {
-        return (int) Math.ceil(Math.max(n, 1) / 9.0) * 9;
     }
 
     public String getTitle() {

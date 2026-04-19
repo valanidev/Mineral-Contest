@@ -32,12 +32,20 @@ public class GameManager {
         reset();
     }
 
-    public KitManager getKitManager() {
-        return kitManager;
-    }
-
     public ArenaManager getArenaManager() {
         return arenaManager;
+    }
+
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
+
+    public DropManager getDropManager() {
+        return dropManager;
+    }
+
+    public KitManager getKitManager() {
+        return kitManager;
     }
 
     public GameResult start() {
@@ -73,7 +81,8 @@ public class GameManager {
         state = GameState.WAITING;                              // Reset game state to waiting
         cancelGameTimer();                                          // Cancel the end timer
         dropManager.cancelDropTimer();                              // Cancel the drop timer
-        this.teamManager.clearAll();                             // Clear all teams
+        teamManager.clearAll();                             // Clear all teams
+        kitManager.resetAll();
         Bukkit.getOnlinePlayers().forEach(p -> {
             p.setDisplayName(p.getName());
             p.setPlayerListName(p.getName());
