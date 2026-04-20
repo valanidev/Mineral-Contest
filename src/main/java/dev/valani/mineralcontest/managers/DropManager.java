@@ -27,10 +27,14 @@ public class DropManager {
         long delayTicks = ThreadLocalRandom.current().nextLong(minSeconds, maxSeconds + 1) * 20L;
         dropTimer = Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!gameManager.isState(GameState.STARTED)) return;
-            new Drop(plugin);
-            Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 1.0f));
+            spawnDrop();
             scheduleNextDrop();
         }, delayTicks);
+    }
+
+    public void spawnDrop() {
+        new Drop(plugin);
+        Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 1.0f));
     }
 
     public void cancelDropTimer() {

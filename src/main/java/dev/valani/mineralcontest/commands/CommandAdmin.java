@@ -25,7 +25,9 @@ public class CommandAdmin implements CommandExecutor, TabCompleter {
     private final Map<String, List<String>> commandStructure = Map.of(
             "chest", List.of("set", "remove", "get"),
             "arena", List.of("set", "remove", "get", "tp"),
-            "score", List.of("set", "get")
+            "score", List.of("set", "get"),
+            "ac", List.of("force"),
+            "drop", List.of("force")
     );
     List<String> teamNames;
     List<Team> teams;
@@ -74,7 +76,7 @@ public class CommandAdmin implements CommandExecutor, TabCompleter {
             sender.sendMessage(plugin.getString("plugin.only_player_command"));
             return false;
         }
-        if (args.length < 3) {
+        if (args.length <= 1) {
             player.sendMessage("§cUsage: /" + label + " <chest|arena> <set|remove|get> <team>");
             return false;
         }
@@ -88,106 +90,121 @@ public class CommandAdmin implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        Team team = teams.stream().filter(t -> t.getName().equalsIgnoreCase(args[2])).findFirst().orElse(null);
-
-        if (team == null) {
-            player.sendMessage(plugin.getString("plugin.no_such_team"));
-            return false;
-        }
-
         switch (args[0].toLowerCase()) {
-            case "chest" -> {
-                switch (args[1].toLowerCase()) {
-                    case "set" -> {
-                        Block targetBlock = player.getTargetBlockExact(6);
-                        if (targetBlock == null) {
-                            player.sendMessage("§cAucun bloc valide trouvé");
-                            return false;
-                        }
-                        Location targetLocation = targetBlock.getLocation();
-                        player.sendMessage("§aLe coffre de l'équipe " + team.getDisplayName() + " §aa été placé en §e" + Utils.formatLocation(targetLocation) + "§a.");
-                        gameManager.getTeamManager().setTeamChest(targetLocation, team);
-                    }
-                    case "remove" -> {
-                        Location chestLocation = gameManager.getTeamManager().getTeamChestLocation(team);
-                        if (chestLocation == null) {
-                            player.sendMessage("§cLe coffre de l'équipe " + team.getDisplayName() + " §cn'est pas défini.");
-                            return false;
-                        }
-                        player.sendMessage("§aLe coffre de l'équipe " + team.getDisplayName() + " §aa été retiré.");
-                        gameManager.getTeamManager().removeTeamChest(team);
-                    }
-                    case "get" -> {
-                        Location chestLocation = gameManager.getTeamManager().getTeamChestLocation(team);
-                        if (chestLocation == null)
-                            player.sendMessage("§cLe coffre de l'équipe " + team.getDisplayName() + " §cn'est pas défini.");
-                        else
-                            player.sendMessage("§aLe coffre de l'équipe " + team.getDisplayName() + " §aest situé en §e" + Utils.formatLocation(chestLocation) + "§a.");
-                    }
+            case "ac" -> {
+                if (args[1].equalsIgnoreCase("force")) {
+                    player.sendMessage("§aSpawn du coffre d'arène forcé.");
+                    gameManager.getArenaManager().makeAvailableWithForce(true);
                 }
             }
-            case "arena" -> {
-                switch (args[1].toLowerCase()) {
-                    case "set" -> {
-                        Location targetLocation = player.getLocation();
-                        player.sendMessage("§aLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §aa été placé en §e" + Utils.formatLocation(targetLocation) + "§a.");
-                        gameManager.getTeamManager().setTeamArena(targetLocation, team);
-                    }
-                    case "remove" -> {
-                        Location arenaLocation = gameManager.getTeamManager().getTeamArenaLocation(team);
-                        if (arenaLocation == null) {
-                            player.sendMessage("§cLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §cn'est pas définie.");
-                            return false;
-                        }
-                        player.sendMessage("§aLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §aa été retirée.");
-                        gameManager.getTeamManager().removeTeamArena(team);
-                    }
-                    case "get" -> {
-                        Location arenaLocation = gameManager.getTeamManager().getTeamArenaLocation(team);
-                        if (arenaLocation == null)
-                            player.sendMessage("§cLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §cn'est pas définie.");
-                        else
-                            player.sendMessage("§aLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §aest située en §e" + Utils.formatLocation(arenaLocation) + "§a.");
-                    }
-                    case "tp" -> {
-                        Location arenaLocation = gameManager.getTeamManager().getTeamArenaLocation(team);
-                        if (arenaLocation == null)
-                            player.sendMessage("§cLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §cn'est pas définie.");
-                        else {
-                            player.teleport(arenaLocation);
-                            player.sendMessage("§aVous avez été téléporté vers le point d'arène de l'équipe " + team.getDisplayName() + "§a.");
-                            player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
-                        }
-                    }
-                }
-            }
-            case "score" -> {
-                switch (args[1].toLowerCase()) {
-                    case "get" -> {
-                        int score = team.getScore();
-                        player.sendMessage("§aScore de l'équipe " + team.getDisplayName() + " §a: §e" + score);
-                    }
-                    case "set" -> {
-                        if (args.length < 4) {
-                            player.sendMessage("§cUsage: /" + label + " score set <team> <valeur>");
-                            return false;
-                        }
-
-                        int value;
-                        try {
-                            value = Integer.parseInt(args[3]);
-                        } catch (NumberFormatException e) {
-                            player.sendMessage("§cValeur invalide.");
-                            return false;
-                        }
-
-                        team.setScore(value);
-                        player.sendMessage("§aScore de l'équipe " + team.getDisplayName() + " §adéfini à §e" + value + "§a.");
-                    }
+            case "drop" -> {
+                if (args[1].equalsIgnoreCase("force")) {
+                    player.sendMessage("§aSpawn du coffre de drop forcé.");
+                    gameManager.getDropManager().spawnDrop();
                 }
             }
         }
 
+        if (args.length >= 3) {
+            Team team = teams.stream().filter(t -> t.getName().equalsIgnoreCase(args[2])).findFirst().orElse(null);
+            if (team == null) {
+                player.sendMessage(plugin.getString("plugin.no_such_team"));
+                return false;
+            }
+
+            switch (args[0].toLowerCase()) {
+                case "chest" -> {
+                    switch (args[1].toLowerCase()) {
+                        case "set" -> {
+                            Block targetBlock = player.getTargetBlockExact(6);
+                            if (targetBlock == null) {
+                                player.sendMessage("§cAucun bloc valide trouvé");
+                                return false;
+                            }
+                            Location targetLocation = targetBlock.getLocation();
+                            player.sendMessage("§aLe coffre de l'équipe " + team.getDisplayName() + " §aa été placé en §e" + Utils.formatLocation(targetLocation) + "§a.");
+                            gameManager.getTeamManager().setTeamChest(targetLocation, team);
+                        }
+                        case "remove" -> {
+                            Location chestLocation = gameManager.getTeamManager().getTeamChestLocation(team);
+                            if (chestLocation == null) {
+                                player.sendMessage("§cLe coffre de l'équipe " + team.getDisplayName() + " §cn'est pas défini.");
+                                return false;
+                            }
+                            player.sendMessage("§aLe coffre de l'équipe " + team.getDisplayName() + " §aa été retiré.");
+                            gameManager.getTeamManager().removeTeamChest(team);
+                        }
+                        case "get" -> {
+                            Location chestLocation = gameManager.getTeamManager().getTeamChestLocation(team);
+                            if (chestLocation == null)
+                                player.sendMessage("§cLe coffre de l'équipe " + team.getDisplayName() + " §cn'est pas défini.");
+                            else
+                                player.sendMessage("§aLe coffre de l'équipe " + team.getDisplayName() + " §aest situé en §e" + Utils.formatLocation(chestLocation) + "§a.");
+                        }
+                    }
+                }
+                case "arena" -> {
+                    switch (args[1].toLowerCase()) {
+                        case "set" -> {
+                            Location targetLocation = player.getLocation();
+                            player.sendMessage("§aLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §aa été placé en §e" + Utils.formatLocation(targetLocation) + "§a.");
+                            gameManager.getTeamManager().setTeamArena(targetLocation, team);
+                        }
+                        case "remove" -> {
+                            Location arenaLocation = gameManager.getTeamManager().getTeamArenaLocation(team);
+                            if (arenaLocation == null) {
+                                player.sendMessage("§cLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §cn'est pas définie.");
+                                return false;
+                            }
+                            player.sendMessage("§aLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §aa été retirée.");
+                            gameManager.getTeamManager().removeTeamArena(team);
+                        }
+                        case "get" -> {
+                            Location arenaLocation = gameManager.getTeamManager().getTeamArenaLocation(team);
+                            if (arenaLocation == null)
+                                player.sendMessage("§cLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §cn'est pas définie.");
+                            else
+                                player.sendMessage("§aLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §aest située en §e" + Utils.formatLocation(arenaLocation) + "§a.");
+                        }
+                        case "tp" -> {
+                            Location arenaLocation = gameManager.getTeamManager().getTeamArenaLocation(team);
+                            if (arenaLocation == null)
+                                player.sendMessage("§cLa téléportation d'arène de l'équipe " + team.getDisplayName() + " §cn'est pas définie.");
+                            else {
+                                player.teleport(arenaLocation);
+                                player.sendMessage("§aVous avez été téléporté vers le point d'arène de l'équipe " + team.getDisplayName() + "§a.");
+                                player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+                            }
+                        }
+                    }
+                }
+                case "score" -> {
+                    switch (args[1].toLowerCase()) {
+                        case "get" -> {
+                            int score = team.getScore();
+                            player.sendMessage("§aScore de l'équipe " + team.getDisplayName() + " §a: §e" + score);
+                        }
+                        case "set" -> {
+                            if (args.length < 4) {
+                                player.sendMessage("§cUsage: /" + label + " score set <team> <valeur>");
+                                return false;
+                            }
+
+                            int value;
+                            try {
+                                value = Integer.parseInt(args[3]);
+                            } catch (NumberFormatException e) {
+                                player.sendMessage("§cValeur invalide.");
+                                return false;
+                            }
+
+                            team.setScore(value);
+                            player.sendMessage("§aScore de l'équipe " + team.getDisplayName() + " §adéfini à §e" + value + "§a.");
+                        }
+                    }
+                }
+            }
+        }
 
         return true;
     }

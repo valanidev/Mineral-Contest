@@ -80,9 +80,13 @@ public class ArenaManager {
         return chestAvailable;
     }
 
-    private void makeAvailable() {
+    public void makeAvailable() {
+        makeAvailableWithForce(false);
+    }
+
+    public void makeAvailableWithForce(boolean force) {
         cancelRecoveryTask();
-        if (gameManager != null && !gameManager.isState(GameState.STARTED)) {
+        if (!force && gameManager != null && !gameManager.isState(GameState.STARTED)) {
             Bukkit.getConsoleSender().sendMessage("§cLa partie n'a pas encore commencé.");
             return;
         }

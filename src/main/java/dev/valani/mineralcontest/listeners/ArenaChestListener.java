@@ -98,6 +98,7 @@ public class ArenaChestListener implements Listener {
     }
 
     private void startAnimation(Player player) {
+        Location chestLoc = arenaManager.getChestLocation();
         arenaChestInventory.clear();
         for (int i = 0; i < 27; i++) {
             arenaChestInventory.setItem(i, redPane);
@@ -123,6 +124,13 @@ public class ArenaChestListener implements Listener {
             if (state[0] >= ANIMATION_TICKS) {
                 finishAnimation(player);
             }
+
+            Location playerLoc = player.getLocation();
+            if (playerLoc.distance(chestLoc) > 3) {
+                cancelAnimation();
+                player.closeInventory();
+            }
+
         }, ANIMATION_PERIOD, ANIMATION_PERIOD);
     }
 
