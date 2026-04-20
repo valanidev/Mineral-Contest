@@ -25,7 +25,6 @@ public class CommandStart implements CommandExecutor {
         }
 
         gameManager.start();
-        Bukkit.broadcastMessage(plugin.getString("game.started"));
         return true;
     }
 }

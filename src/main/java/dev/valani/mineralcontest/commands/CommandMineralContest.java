@@ -51,10 +51,4 @@ public class CommandMineralContest implements CommandExecutor {
 
         return true;
     }
-
-    private void checkAllPlayersReady() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-
-        }
-    }
 }

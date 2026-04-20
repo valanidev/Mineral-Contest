@@ -20,7 +20,6 @@ public class CommandReset implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         gameManager.reset();
-        Bukkit.broadcastMessage(plugin.getString("game.reset"));
         return true;
     }
 }

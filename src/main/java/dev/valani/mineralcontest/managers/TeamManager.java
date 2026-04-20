@@ -171,7 +171,6 @@ public class TeamManager {
         return builder.toString();
     }
 
-
     public void setTeamArena(Location loc, Team team) {
         if (loc == null || team == null) return;
         World world = loc.getWorld();

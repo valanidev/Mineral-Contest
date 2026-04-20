@@ -27,11 +27,11 @@ public class PlayerDeathListener implements Listener {
     private final KitManager kitManager;
     private final List<Material> allowedDrops = List.of(Material.DIAMOND, Material.IRON_INGOT, Material.GOLD_INGOT, Material.EMERALD);
 
-    public PlayerDeathListener(Main plugin, GameManager gameManager, TeamManager teamManager, KitManager kitManager) {
+    public PlayerDeathListener(Main plugin, GameManager gameManager) {
         this.plugin = plugin;
         this.gameManager = gameManager;
-        this.teamManager = teamManager;
-        this.kitManager = kitManager;
+        this.teamManager = gameManager.getTeamManager();
+        this.kitManager = gameManager.getKitManager();
     }
 
     @EventHandler
@@ -57,7 +57,6 @@ public class PlayerDeathListener implements Listener {
         Player player = event.getPlayer();
         KitBase kit = kitManager.getKit(player);
         player.sendMessage("t'es mort big noob");
-        player.sendMessage(kit.toString());
         if (kit == null) return;
         Bukkit.getScheduler().runTaskLater(plugin, () -> kit.apply(player), 1L);
     }

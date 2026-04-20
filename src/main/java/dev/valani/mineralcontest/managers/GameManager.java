@@ -7,6 +7,7 @@ import dev.valani.mineralcontest.game.GameResult;
 import dev.valani.mineralcontest.game.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -56,6 +57,16 @@ public class GameManager {
 
     public GameResult start() {
         if (!isState(GameState.WAITING)) return GameResult.ALREADY_STARTED;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!kitManager.hasKit(player)) {
+                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de kit.");
+                return GameResult.PLAYER_HAS_NO_KIT;
+            }
+            if (teamManager.getTeams().stream().noneMatch(t -> t.hasMember(player))) {
+                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de team.");
+                return GameResult.PLAYER_HAS_NO_TEAM;
+            }
+        }
 
         state = GameState.STARTED;
 
@@ -67,6 +78,7 @@ public class GameManager {
             arenaManager.scheduleAvailability();
         }
 
+        Bukkit.broadcastMessage(plugin.getString("game.started"));
         return GameResult.SUCCESS;
     }
 
@@ -77,6 +89,7 @@ public class GameManager {
         cancelGameTimer();
         dropManager.cancelDropTimer();
 
+        Bukkit.broadcastMessage(plugin.getString("game.ended"));
         return GameResult.SUCCESS;
     }
 
@@ -91,7 +104,8 @@ public class GameManager {
             p.setPlayerListName(p.getName());
             p.setHealth(20);
             p.setFoodLevel(20);
-        });                                                     // Reset player names
+        });
+        Bukkit.broadcastMessage(plugin.getString("game.reset"));                                                // Reset player names
     }
 
     private void cancelGameTimer() {

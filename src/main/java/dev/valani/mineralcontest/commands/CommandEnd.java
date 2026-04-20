@@ -25,7 +25,6 @@ public class CommandEnd implements CommandExecutor {
         }
 
         gameManager.end();
-        Bukkit.broadcastMessage(plugin.getString("game.ended"));
         return true;
     }
 }

@@ -47,6 +47,10 @@ public class KitManager {
         return kit.equals(playerKits.get(player.getUniqueId()));
     }
 
+    public boolean hasKit(Player player) {
+        return playerKits.containsKey(player.getUniqueId());
+    }
+
     public void resetAll() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             for (KitBase kit : KITS) {
