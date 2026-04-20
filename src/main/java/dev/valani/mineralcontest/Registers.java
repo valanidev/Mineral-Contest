@@ -35,7 +35,7 @@ public class Registers {
         pm.registerEvents(new PreGameListener(gameManager), plugin);
         pm.registerEvents(new PlayerTakeDamageListener(gameManager.getTeamManager()), plugin);
         pm.registerEvents(new EnchantmentTableListener(), plugin);
-        pm.registerEvents(new PlayerJoinListener(), plugin);
+        pm.registerEvents(new PlayerJoinListener(gameManager), plugin);
         pm.registerEvents(new TeamChestListener(gameManager), plugin);
 
         plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest(plugin, gameManager));

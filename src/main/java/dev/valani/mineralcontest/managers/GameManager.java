@@ -1,16 +1,11 @@
 package dev.valani.mineralcontest.managers;
 
 import dev.valani.mineralcontest.Main;
-import dev.valani.mineralcontest.commands.CommandArenaChest;
-import dev.valani.mineralcontest.game.Drop;
 import dev.valani.mineralcontest.game.GameResult;
 import dev.valani.mineralcontest.game.GameState;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 public class GameManager {
 
@@ -22,6 +17,7 @@ public class GameManager {
     private final TeamManager teamManager;
     private final KitManager kitManager;
     private final ScoreManager scoreManager;
+    private final HealthDisplayManager healthDisplay;
 
     private BukkitTask gameEndTimer;
 
@@ -32,6 +28,7 @@ public class GameManager {
         this.teamManager = new TeamManager(plugin);
         this.kitManager = new KitManager(plugin);
         this.scoreManager = new ScoreManager();
+        this.healthDisplay = new HealthDisplayManager();
         reset();
     }
 
@@ -41,6 +38,10 @@ public class GameManager {
 
     public TeamManager getTeamManager() {
         return teamManager;
+    }
+
+    public HealthDisplayManager getHealthDisplay() {
+        return healthDisplay;
     }
 
     public DropManager getDropManager() {
@@ -57,16 +58,16 @@ public class GameManager {
 
     public GameResult start() {
         if (!isState(GameState.WAITING)) return GameResult.ALREADY_STARTED;
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!kitManager.hasKit(player)) {
-                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de kit.");
-                return GameResult.PLAYER_HAS_NO_KIT;
-            }
-            if (teamManager.getTeams().stream().noneMatch(t -> t.hasMember(player))) {
-                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de team.");
-                return GameResult.PLAYER_HAS_NO_TEAM;
-            }
-        }
+//        for (Player player : Bukkit.getOnlinePlayers()) {
+//            if (!kitManager.hasKit(player)) {
+//                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de kit.");
+//                return GameResult.PLAYER_HAS_NO_KIT;
+//            }
+//            if (teamManager.getTeams().stream().noneMatch(t -> t.hasMember(player))) {
+//                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de team.");
+//                return GameResult.PLAYER_HAS_NO_TEAM;
+//            }
+//        }
 
         state = GameState.STARTED;
 
@@ -78,6 +79,8 @@ public class GameManager {
             arenaManager.scheduleAvailability();
         }
 
+        healthDisplay.applyToAll();
+
         Bukkit.broadcastMessage(plugin.getString("game.started"));
         return GameResult.SUCCESS;
     }
@@ -88,6 +91,7 @@ public class GameManager {
         state = GameState.ENDED;
         cancelGameTimer();
         dropManager.cancelDropTimer();
+        healthDisplay.removeFromAll();
 
         Bukkit.broadcastMessage(plugin.getString("game.ended"));
         return GameResult.SUCCESS;
