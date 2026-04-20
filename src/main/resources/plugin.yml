@@ -16,6 +16,9 @@ commands:
     description: "Sélectionner une équipe"
   c:
     description: "Commande de chat privé"
+  arena:
+    aliases: [ arene ]
+    description: "Commande d'arène"
   admin:
     description: "Commande d'administration"
     permission: mineralcontest.admin

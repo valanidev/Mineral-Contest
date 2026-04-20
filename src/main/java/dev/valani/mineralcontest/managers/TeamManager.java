@@ -17,14 +17,17 @@ public class TeamManager {
     private final FileManager teamFile;
 
     Map<Team, Location> teamChestLocations;
+    Map<Team, Location> teamArenaLocations;
 
     public TeamManager(Main plugin) {
         this.plugin = plugin;
         this.teams = loadTeamsFromConfig();
         this.teamFile = new FileManager(plugin, "team.yml");
         this.teamChestLocations = new HashMap<>();
+        this.teamArenaLocations = new HashMap<>();
 
         loadTeamChests();
+        loadTeamArenas();
     }
 
     private List<Team> loadTeamsFromConfig() {
@@ -69,6 +72,35 @@ public class TeamManager {
 
             Location loc = new Location(world, x, y, z);
             teamChestLocations.put(team, loc);
+        }
+    }
+
+    private void loadTeamArenas() {
+        ConfigurationSection section = teamFile.getConfig().getConfigurationSection("team.arena");
+        if (section == null) return;
+
+        for (String teamName : section.getKeys(false)) {
+            Team team = getTeams().stream()
+                    .filter(t -> t.getName().equalsIgnoreCase(teamName))
+                    .findFirst()
+                    .orElse(null);
+
+            if (team == null) continue;
+
+            String path = "team.arena." + teamName;
+
+            String worldName = teamFile.getConfig().getString(path + ".world", "world");
+            World world = Bukkit.getWorld(worldName);
+            if (world == null) continue;
+
+            int x = teamFile.getConfig().getInt(path + ".x");
+            int y = teamFile.getConfig().getInt(path + ".y");
+            int z = teamFile.getConfig().getInt(path + ".z");
+            int yaw = teamFile.getConfig().getInt(path + ".yaw");
+            int pitch = teamFile.getConfig().getInt(path + ".pitch");
+
+            Location loc = new Location(world, x, y, z, yaw, pitch);
+            teamArenaLocations.put(team, loc);
         }
     }
 
@@ -137,5 +169,35 @@ public class TeamManager {
                         .append("§r, "));
         builder.delete(builder.length() - 2, builder.length());
         return builder.toString();
+    }
+
+
+    public void setTeamArena(Location loc, Team team) {
+        if (loc == null || team == null) return;
+        World world = loc.getWorld();
+        if (world == null) return;
+
+        String key = "team.arena." + team.getName();
+        teamFile.getConfig().set(key + ".world", world.getName());
+        teamFile.getConfig().set(key + ".x", loc.getBlockX());
+        teamFile.getConfig().set(key + ".y", loc.getBlockY());
+        teamFile.getConfig().set(key + ".z", loc.getBlockZ());
+        teamFile.getConfig().set(key + ".yaw", loc.getYaw());
+        teamFile.getConfig().set(key + ".pitch", loc.getPitch());
+        teamFile.save();
+
+        teamArenaLocations.put(team, loc);
+    }
+
+    public void removeTeamArena(Team team) {
+        String key = "team.arena." + team.getName();
+        teamFile.getConfig().set(key, null);
+        teamFile.save();
+        teamArenaLocations.remove(team);
+    }
+
+    public Location getTeamArenaLocation(Team team) {
+        if (team == null) return null;
+        return teamArenaLocations.get(team);
     }
 }

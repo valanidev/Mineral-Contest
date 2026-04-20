@@ -22,8 +22,11 @@ public class Registers {
         plugin.getCommand("team").setExecutor(new CommandTeam(plugin, teamSelectorMenu, gameManager));
         plugin.getCommand("kit").setExecutor(new CommandKit(plugin, kitSelectorMenu, gameManager));
         plugin.getCommand("c").setExecutor(new CommandChat(plugin, gameManager.getTeamManager()));
+        plugin.getCommand("arena").setExecutor(new CommandArena(plugin, gameManager));
 
-        plugin.getCommand("admin").setExecutor(new CommandAdmin(plugin, gameManager));
+        CommandAdmin adminCmd = new CommandAdmin(plugin, gameManager);
+        plugin.getCommand("admin").setExecutor(adminCmd);
+        plugin.getCommand("admin").setTabCompleter(adminCmd);
 
         pm.registerEvents(new TeamSelectorListener(gameManager, gameManager.getTeamManager(), teamSelectorMenu), plugin);
         pm.registerEvents(new ArenaChestListener(plugin, gameManager.getArenaManager()), plugin);

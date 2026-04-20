@@ -28,6 +28,14 @@ public class Utils {
     }
 
     public static String formatLocation(Location loc) {
+        return formatLocation(loc, false);
+    }
+
+    public static String formatLocation(Location loc, boolean withYawPitch) {
+        if (withYawPitch)
+            return loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ()
+                    + " (" + Objects.requireNonNull(loc.getWorld()).getName() + ") "
+                    + "| " + loc.getYaw() + ", " + loc.getPitch();
         return loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ()
                 + " (" + Objects.requireNonNull(loc.getWorld()).getName() + ")";
     }
