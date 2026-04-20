@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -128,5 +129,12 @@ public class TeamChestListener implements Listener {
             String name = t.getColor() + "§lCoffre " + t.getName();
             return Bukkit.createInventory(null, 27, name);
         });
+    }
+
+    @EventHandler
+    public void onTeamChestBreak(BlockBreakEvent event) {
+        Location loc = event.getBlock().getLocation();
+        if (!teamManager.isTeamChest(loc)) return;
+        event.setCancelled(true);
     }
 }
