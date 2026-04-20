@@ -20,6 +20,7 @@ public class GameManager {
     private final DropManager dropManager;
     private final TeamManager teamManager;
     private final KitManager kitManager;
+    private final ScoreManager scoreManager;
 
     private BukkitTask gameEndTimer;
 
@@ -29,6 +30,7 @@ public class GameManager {
         this.dropManager = new DropManager(plugin, this);
         this.teamManager = new TeamManager(plugin);
         this.kitManager = new KitManager(plugin);
+        this.scoreManager = new ScoreManager();
         reset();
     }
 
@@ -46,6 +48,10 @@ public class GameManager {
 
     public KitManager getKitManager() {
         return kitManager;
+    }
+
+    public ScoreManager getScoreManager() {
+        return scoreManager;
     }
 
     public GameResult start() {

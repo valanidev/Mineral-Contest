@@ -1,22 +1,18 @@
 package dev.valani.mineralcontest.listeners;
 
+import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.managers.GameManager;
+import dev.valani.mineralcontest.managers.ScoreManager;
 import dev.valani.mineralcontest.managers.TeamManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
-import org.bukkit.block.EnderChest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
@@ -28,33 +24,58 @@ public class TeamChestListener implements Listener {
 
     private final GameManager gameManager;
     private final TeamManager teamManager;
-    private final List<Material> allowedDrops;
+    private final ScoreManager scoreManager;
+    private final Set<Material> allowedDrops;
 
     private final Map<Team, Inventory> teamInventories;
-    private Block clickedBlock;
 
     public TeamChestListener(GameManager gameManager) {
         this.gameManager = gameManager;
         this.teamManager = gameManager.getTeamManager();
+        this.scoreManager = gameManager.getScoreManager();
         this.teamInventories = new HashMap<>();
 
-        allowedDrops = new ArrayList<>(Arrays.asList(Material.DIAMOND, Material.IRON_INGOT, Material.GOLD_INGOT, Material.EMERALD));
+        allowedDrops = Set.of(Material.DIAMOND, Material.IRON_INGOT, Material.GOLD_INGOT, Material.EMERALD);
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        clickedBlock = event.getClickedBlock();
-        if (clickedBlock == null) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
-        Location chestLoc = gameManager.getTeamManager().getTeamChestLocation(teamManager.getPlayerTeam(event.getPlayer()).orElse(null));
-        if (chestLoc == null) return;
-        if (!clickedBlock.getLocation().equals(chestLoc.getBlock().getLocation())) return;
+        Block clickedBlock = event.getClickedBlock();
+        if (clickedBlock == null) return;
+        Location loc = clickedBlock.getLocation();
+        if (!teamManager.isTeamChest(loc)) return;
 
-        event.setCancelled(true);
         Player player = event.getPlayer();
 
-        Inventory inv = getTeamInventory(player);
+        if (!gameManager.isState(GameState.STARTED)) {
+            event.setCancelled(true);
+            player.sendMessage("§cLa partie n'a pas encore commencé.");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+            return;
+        }
+
+        Team playerTeam = teamManager.getPlayerTeam(player).orElse(null);
+        if (playerTeam == null) {
+            event.setCancelled(true);
+            player.sendMessage("§cTu n'as pas d'équipe.");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+            return;
+        }
+
+        Location chestLoc = gameManager.getTeamManager().getTeamChestLocation(playerTeam);
+        if (chestLoc == null) return;
+        if (!clickedBlock.getLocation().equals(chestLoc.getBlock().getLocation())) {
+            player.sendMessage("§cTu ne peux pas ouvrir le coffre des autres équipes.");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+            event.setCancelled(true);
+            return;
+        }
+
+        event.setCancelled(true);
+
+        Inventory inv = createInventory(playerTeam);
         if (inv == null) return;
 
         player.openInventory(inv);
@@ -62,19 +83,11 @@ public class TeamChestListener implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        if (!(event.getPlayer() instanceof Player player)) return;
-        Inventory teamInventory = getTeamInventory(player);
-        if (teamInventory == null) return;
-        if (!event.getInventory().equals(teamInventory)) return;
-
-        player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 1.0f);
-    }
-
-    @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
-        Inventory teamInventory = getTeamInventory(player);
+        Team team = teamManager.getPlayerTeam(player).orElse(null);
+        if (team == null) return;
+        Inventory teamInventory = getExistingInventory(team);
         if (teamInventory == null) return;
         if (!event.getInventory().equals(teamInventory)) return;
         ItemStack item = event.getCurrentItem();
@@ -86,7 +99,9 @@ public class TeamChestListener implements Listener {
     @EventHandler
     public void onTeamChestClose(InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player player)) return;
-        Inventory teamInventory = getTeamInventory(player);
+        Team team = teamManager.getPlayerTeam(player).orElse(null);
+        if (team == null) return;
+        Inventory teamInventory = getExistingInventory(team);
         if (teamInventory == null) return;
         if (!event.getInventory().equals(teamInventory)) return;
 
@@ -97,46 +112,21 @@ public class TeamChestListener implements Listener {
             }
         }
         teamInventory.clear();
-        int score = countScore(drops, teamManager.getPlayerTeam(player).orElse(null));
-        if (score == 0) return;
 
-        Team team = teamManager.getPlayerTeam(player).orElse(null);
-        if (team == null) return;
-        team.addScore(score);
+        int score = scoreManager.calculateScore(drops);
+        scoreManager.applyScore(team, score);
 
-        for (UUID uuid : team.getMembers()) {
-            Player p = Bukkit.getPlayer(uuid);
-            if (p == null) continue;
-            p.sendMessage("§a§l+" + score + " points");
-            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 1.0f);
-        }
-
+        player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 1.0f);
     }
 
-    private Inventory getTeamInventory(Player player) {
-        Team team = teamManager.getPlayerTeam(player).orElse(null);
-        if (team == null) return null;
+    private Inventory getExistingInventory(Team team) {
+        return teamInventories.get(team);
+    }
 
+    private Inventory createInventory(Team team) {
         return teamInventories.computeIfAbsent(team, t -> {
             String name = t.getColor() + "§lCoffre " + t.getName();
             return Bukkit.createInventory(null, 27, name);
         });
-    }
-
-    private final Map<Material, Integer> dropScores = Map.of(
-            Material.EMERALD, 300,
-            Material.DIAMOND, 200,
-            Material.IRON_INGOT, 20,
-            Material.GOLD_INGOT, 40
-    );
-
-    public int countScore(List<ItemStack> drops, Team team) {
-        int total = 0;
-        for (ItemStack item : drops) {
-            if (item == null) continue;
-            if (!allowedDrops.contains(item.getType())) continue;
-            total += dropScores.getOrDefault(item.getType(), 0) * item.getAmount();
-        }
-        return total;
     }
 }
