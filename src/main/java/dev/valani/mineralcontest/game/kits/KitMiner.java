@@ -36,10 +36,7 @@ public class KitMiner extends KitBase {
     @Override
     public void apply(Player player) {
         AttributeInstance miningSpeed = player.getAttribute(Attribute.BLOCK_BREAK_SPEED);
-        if (miningSpeed != null) {
-            miningSpeed.removeModifier(BLOCK_BREAK_SPEED_MODIFIER);
-            miningSpeed.addModifier(BLOCK_BREAK_SPEED_MODIFIER);
-        }
+        applyModifier(miningSpeed, BLOCK_BREAK_SPEED_MODIFIER);
         for (int slot : BLOCKED_SLOTS) {
             player.getInventory().setItem(slot, BLOCKED_ITEM);
         }
@@ -47,10 +44,7 @@ public class KitMiner extends KitBase {
 
     @Override
     public void remove(Player player) {
-        AttributeInstance miningSpeed = player.getAttribute(Attribute.BLOCK_BREAK_SPEED);
-        if (miningSpeed != null) {
-            miningSpeed.removeModifier(BLOCK_BREAK_SPEED_MODIFIER);
-        }
+        removeModifier(player.getAttribute(Attribute.BLOCK_BREAK_SPEED), BLOCK_BREAK_SPEED_MODIFIER.getKey());
         for (int slot : BLOCKED_SLOTS) {
             ItemStack current = player.getInventory().getItem(slot);
             if (current != null && current.isSimilar(BLOCKED_ITEM)) {

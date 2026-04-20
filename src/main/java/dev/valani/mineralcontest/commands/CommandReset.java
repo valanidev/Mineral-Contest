@@ -1,0 +1,26 @@
+package dev.valani.mineralcontest.commands;
+
+import dev.valani.mineralcontest.Main;
+import dev.valani.mineralcontest.game.GameState;
+import dev.valani.mineralcontest.managers.GameManager;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+
+public class CommandReset implements CommandExecutor {
+    private final Main plugin;
+    private final GameManager gameManager;
+
+    public CommandReset(Main plugin, GameManager gameManager) {
+        this.plugin = plugin;
+        this.gameManager = gameManager;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        gameManager.reset();
+        Bukkit.broadcastMessage(plugin.getString("game.reset"));
+        return true;
+    }
+}

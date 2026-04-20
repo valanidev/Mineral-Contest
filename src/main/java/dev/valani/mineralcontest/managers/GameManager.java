@@ -58,13 +58,11 @@ public class GameManager {
         if (!isState(GameState.WAITING)) return GameResult.ALREADY_STARTED;
 
         state = GameState.STARTED;
-        Bukkit.broadcastMessage(plugin.getString("game.started"));
 
         int durationSeconds = plugin.getInt("game.duration_seconds");
         gameEndTimer = Bukkit.getScheduler().runTaskLater(plugin, this::end, durationSeconds * 20L);
 
         dropManager.scheduleNextDrop();
-
         if (arenaManager != null && arenaManager.getChestLocation() != null) {
             arenaManager.scheduleAvailability();
         }
@@ -78,7 +76,6 @@ public class GameManager {
         state = GameState.ENDED;
         cancelGameTimer();
         dropManager.cancelDropTimer();
-        Bukkit.broadcastMessage(plugin.getString("game.ended"));
 
         return GameResult.SUCCESS;
     }
@@ -92,8 +89,9 @@ public class GameManager {
         Bukkit.getOnlinePlayers().forEach(p -> {
             p.setDisplayName(p.getName());
             p.setPlayerListName(p.getName());
+            p.setHealth(20);
+            p.setFoodLevel(20);
         });                                                     // Reset player names
-        Bukkit.broadcastMessage(plugin.getString("game.reset"));
     }
 
     private void cancelGameTimer() {

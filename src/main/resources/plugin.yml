@@ -22,3 +22,12 @@ commands:
   admin:
     description: "Commande d'administration"
     permission: mineralcontest.admin
+  start:
+    description: "Démarrer une partie"
+    permission: mineralcontest.start
+  end:
+    description: "Terminer une partie"
+    permission: mineralcontest.end
+  reset:
+    description: "Réinitialiser la partie"
+    permission: mineralcontest.reset

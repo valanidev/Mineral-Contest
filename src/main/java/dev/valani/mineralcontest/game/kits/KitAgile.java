@@ -13,8 +13,8 @@ import java.util.Objects;
 public class KitAgile extends KitBase {
 
     private static final float MOVEMENT_SPEED_MULTIPLIER = 1.2f;
-    private static final float FALL_DAMAGE_MULTIPLIER    = 0.0f;
-    private static final float MAX_HEALTH_MULTIPLIER     = 0.8f;
+    private static final float FALL_DAMAGE_MULTIPLIER = 0.0f;
+    private static final float MAX_HEALTH_MULTIPLIER = 0.8f;
 
     private static final AttributeModifier SPEED_MODIFIER = new AttributeModifier(
             Objects.requireNonNull(NamespacedKey.fromString("mineralcontest:kit_agile_speed")),
@@ -45,35 +45,17 @@ public class KitAgile extends KitBase {
     @Override
     public void apply(Player player) {
         AttributeInstance speed = player.getAttribute(Attribute.MOVEMENT_SPEED);
-        if (speed != null) {
-            speed.removeModifier(SPEED_MODIFIER);
-            speed.addModifier(SPEED_MODIFIER);
-        }
+        applyModifier(speed, SPEED_MODIFIER);
         AttributeInstance fallDamage = player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER);
-        if (fallDamage != null) {
-            fallDamage.removeModifier(FALL_DAMAGE_MODIFIER);
-            fallDamage.addModifier(FALL_DAMAGE_MODIFIER);
-        }
+        applyModifier(fallDamage, FALL_DAMAGE_MODIFIER);
         AttributeInstance maxHealth = player.getAttribute(Attribute.MAX_HEALTH);
-        if (maxHealth != null) {
-            maxHealth.removeModifier(MAX_HEALTH_MODIFIER);
-            maxHealth.addModifier(MAX_HEALTH_MODIFIER);
-        }
+        applyModifier(maxHealth, MAX_HEALTH_MODIFIER);
     }
 
     @Override
     public void remove(Player player) {
-        AttributeInstance speed = player.getAttribute(Attribute.MOVEMENT_SPEED);
-        if (speed != null) {
-            speed.removeModifier(SPEED_MODIFIER);
-        }
-        AttributeInstance fallDamage = player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER);
-        if (fallDamage != null) {
-            fallDamage.removeModifier(FALL_DAMAGE_MODIFIER);
-        }
-        AttributeInstance maxHealth = player.getAttribute(Attribute.MAX_HEALTH);
-        if (maxHealth != null) {
-            maxHealth.removeModifier(MAX_HEALTH_MODIFIER);
-        }
+        removeModifier(player.getAttribute(Attribute.ATTACK_DAMAGE), SPEED_MODIFIER.getKey());
+        removeModifier(player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER), FALL_DAMAGE_MODIFIER.getKey());
+        removeModifier(player.getAttribute(Attribute.MAX_HEALTH), MAX_HEALTH_MODIFIER.getKey());
     }
 }

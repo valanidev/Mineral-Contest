@@ -49,37 +49,17 @@ public class KitRobust extends KitBase {
     @Override
     public void apply(Player player) {
         AttributeInstance health = player.getAttribute(Attribute.MAX_HEALTH);
-        if (health != null) {
-            health.removeModifier(HEALTH_MODIFIER);
-            health.addModifier(HEALTH_MODIFIER);
-        }
-
+        applyModifier(health, HEALTH_MODIFIER);
         AttributeInstance kb = player.getAttribute(Attribute.KNOCKBACK_RESISTANCE);
-        if (kb != null) {
-            kb.removeModifier(KB_MODIFIER);
-            kb.addModifier(KB_MODIFIER);
-        }
-
+        applyModifier(kb, KB_MODIFIER);
         AttributeInstance attackSpeed = player.getAttribute(Attribute.ATTACK_SPEED);
-        if (attackSpeed != null) {
-            attackSpeed.removeModifier(ATTACK_SPEED_MODIFIER);
-            attackSpeed.addModifier(ATTACK_SPEED_MODIFIER);
-        }
+        applyModifier(attackSpeed, ATTACK_SPEED_MODIFIER);
     }
 
     @Override
     public void remove(Player player) {
-        AttributeInstance health = player.getAttribute(Attribute.MAX_HEALTH);
-        if (health != null) {
-            health.removeModifier(HEALTH_MODIFIER);
-        }
-        AttributeInstance kb = player.getAttribute(Attribute.KNOCKBACK_RESISTANCE);
-        if (kb != null) {
-            kb.removeModifier(KB_MODIFIER);
-        }
-        AttributeInstance attackSpeed = player.getAttribute(Attribute.ATTACK_SPEED);
-        if (attackSpeed != null) {
-            attackSpeed.removeModifier(ATTACK_SPEED_MODIFIER);
-        }
+        removeModifier(player.getAttribute(Attribute.MAX_HEALTH), HEALTH_MODIFIER.getKey());
+        removeModifier(player.getAttribute(Attribute.KNOCKBACK_RESISTANCE), KB_MODIFIER.getKey());
+        removeModifier(player.getAttribute(Attribute.ATTACK_SPEED), ATTACK_SPEED_MODIFIER.getKey());
     }
 }

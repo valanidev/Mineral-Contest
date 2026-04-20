@@ -39,8 +39,11 @@ public class Registers {
         pm.registerEvents(new TeamChestListener(gameManager), plugin);
 
         plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest(plugin, gameManager));
+        plugin.getCommand("start").setExecutor(new CommandStart(plugin, gameManager));
+        plugin.getCommand("end").setExecutor(new CommandEnd(plugin, gameManager));
+        plugin.getCommand("reset").setExecutor(new CommandReset(plugin, gameManager));
 //        pm.registerEvents(new PlayerDeathListener(plugin, gameManager, gameManager.getTeamManager(), gameManager.getKitManager()), plugin);
-//        pm.registerEvents(new MinerKitListener(kitManager), plugin);
+        pm.registerEvents(new MinerKitListener(gameManager.getKitManager()), plugin);
     }
 
 }
