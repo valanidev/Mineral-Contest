@@ -1,6 +1,9 @@
 package dev.valani.mineralcontest.utils;
 
+import dev.valani.mineralcontest.game.Team;
 import org.bukkit.*;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.Objects;
 
@@ -74,5 +77,15 @@ public class Utils {
             return minutes + "m " + sec + "s";
         }
         return seconds + " seconde" + (seconds > 1 ? "s" : "");
+    }
+
+    public static ItemStack buildHelmet(Team team) {
+        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
+        if (team == null) return helmet;
+        LeatherArmorMeta meta = (LeatherArmorMeta) helmet.getItemMeta();
+        if (meta == null) return helmet;
+        meta.setColor(Utils.translateChatColorToColor(team.getColor()));
+        helmet.setItemMeta(meta);
+        return helmet;
     }
 }
