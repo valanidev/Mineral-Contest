@@ -5,6 +5,7 @@ import dev.valani.mineralcontest.game.kits.KitBase;
 import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.managers.KitManager;
 import dev.valani.mineralcontest.menus.KitSelectorMenu;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -54,8 +55,8 @@ public class KitSelectorListener implements Listener {
             return;
         }
 
+        Bukkit.broadcastMessage("§6§lKIT §a" + player.getDisplayName() + " §aa choisi le kit " + selected.getDisplayName() + "§a.");
         kitManager.assignKit(player, selected);
-        player.sendMessage("§aKit §f" + selected.getDisplayName() + " §asélectionné !");
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
         menu.open(player);
     }

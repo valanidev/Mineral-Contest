@@ -28,6 +28,11 @@ public class Registers {
         plugin.getCommand("admin").setExecutor(adminCmd);
         plugin.getCommand("admin").setTabCompleter(adminCmd);
 
+        plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest(plugin, gameManager));
+        plugin.getCommand("start").setExecutor(new CommandStart(plugin, gameManager));
+        plugin.getCommand("end").setExecutor(new CommandEnd(plugin, gameManager));
+        plugin.getCommand("reset").setExecutor(new CommandReset(plugin, gameManager));
+
         pm.registerEvents(new TeamSelectorListener(gameManager, gameManager.getTeamManager(), teamSelectorMenu), plugin);
         pm.registerEvents(new ArenaChestListener(plugin, gameManager.getArenaManager()), plugin);
         pm.registerEvents(new KitSelectorListener(gameManager, gameManager.getKitManager(), kitSelectorMenu), plugin);
@@ -39,11 +44,7 @@ public class Registers {
         pm.registerEvents(new PlayerQuitListener(gameManager), plugin);
         pm.registerEvents(new TeamChestListener(gameManager), plugin);
         pm.registerEvents(new DoorListener(gameManager, gameManager.getTeamManager()), plugin);
-
-        plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest(plugin, gameManager));
-        plugin.getCommand("start").setExecutor(new CommandStart(plugin, gameManager));
-        plugin.getCommand("end").setExecutor(new CommandEnd(plugin, gameManager));
-        plugin.getCommand("reset").setExecutor(new CommandReset(plugin, gameManager));
+        pm.registerEvents(new VillagerRightClickListener(gameManager), plugin);
         pm.registerEvents(new PlayerDeathListener(plugin, gameManager), plugin);
         pm.registerEvents(new MinerKitListener(gameManager.getKitManager()), plugin);
     }

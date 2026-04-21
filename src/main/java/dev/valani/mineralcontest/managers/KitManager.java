@@ -31,7 +31,6 @@ public class KitManager {
         removeKit(player);
 
         playerKits.put(player.getUniqueId(), kit);
-        Bukkit.broadcastMessage("§6§lKIT §a" + player.getName() + " §aa choisi le kit " + kit.getDisplayName() + "§a.");
         kit.apply(player);
     }
 

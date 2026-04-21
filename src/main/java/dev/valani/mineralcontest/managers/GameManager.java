@@ -157,6 +157,7 @@ public class GameManager {
             arenaManager.scheduleAvailability();
         }
 
+
         healthDisplay.applyToAll();
         String gameStartedStr = plugin.getString("game.started");
 
@@ -172,6 +173,9 @@ public class GameManager {
             if (team == null) continue;
             player.teleport(teamManager.getTeamArenaLocation(team));
         }
+
+        World world = Bukkit.getWorld("world");
+        if (world != null) world.setTime(0);
 
         Bukkit.broadcastMessage("\n" + gameStartedStr + "\n ");
         return GameResult.SUCCESS;

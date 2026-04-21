@@ -6,6 +6,7 @@ import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.managers.TeamManager;
 import dev.valani.mineralcontest.menus.TeamSelectorMenu;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,7 +50,7 @@ public class TeamSelectorListener implements Listener {
 
         switch (result) {
             case SUCCESS -> {
-                player.sendMessage(target.getColor() + "Tu as rejoint l'équipe " + target.getName() + " !");
+                Bukkit.broadcastMessage("§6§lTEAM §a" + player.getDisplayName() + " §aa rejoint la team " + target.getDisplayName() + "§a.");
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
                 player.setDisplayName(target.getColor() + player.getName());
                 player.setPlayerListName(target.getColor() + player.getName());
