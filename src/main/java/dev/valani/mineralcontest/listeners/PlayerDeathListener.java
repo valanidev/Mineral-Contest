@@ -9,6 +9,7 @@ import dev.valani.mineralcontest.managers.KitManager;
 import dev.valani.mineralcontest.managers.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -58,6 +59,11 @@ public class PlayerDeathListener implements Listener {
         KitBase kit = kitManager.getKit(player);
         if (kit == null) return;
         Bukkit.getScheduler().runTaskLater(plugin, () -> kit.apply(player), 1L);
+
+        Team team = teamManager.getPlayerTeam(player).orElse(null);
+        if (team == null) return;
+        Location spawnLoc = teamManager.getTeamChestLocation(team).clone().add(0.5, 1, 0.5);
+        event.setRespawnLocation(spawnLoc);
     }
 
 }
