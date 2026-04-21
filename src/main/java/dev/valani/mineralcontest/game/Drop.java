@@ -11,10 +11,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Drop {
     public Drop(Main plugin) {
-        int minX = -1000;
-        int maxX = 1000;
-        int minZ = -1000;
-        int maxZ = 1000;
+        int minX = -400;
+        int maxX = 400;
+        int minZ = -400;
+        int maxZ = 400;
 
         World world = Bukkit.getWorld("world");
         if (world == null) return;

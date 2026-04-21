@@ -36,7 +36,7 @@ public class TeamChestListener implements Listener {
         this.scoreManager = gameManager.getScoreManager();
         this.teamInventories = new HashMap<>();
 
-        allowedDrops = Set.of(Material.DIAMOND, Material.IRON_INGOT, Material.GOLD_INGOT, Material.EMERALD);
+        allowedDrops = gameManager.getDropScores().keySet();
     }
 
     @EventHandler

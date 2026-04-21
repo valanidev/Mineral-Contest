@@ -4,17 +4,20 @@ import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.GameResult;
 import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.game.Team;
-import dev.valani.mineralcontest.utils.FileManager;
 import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameManager {
 
@@ -33,6 +36,8 @@ public class GameManager {
     private final List<BukkitTask> alertTasks;
     private BukkitTask gameEndTimer;
 
+    private Map<Material, Integer> dropScores;
+
     private long endTimeMillis;
 
     public GameManager(Main plugin) {
@@ -42,11 +47,34 @@ public class GameManager {
         this.teamManager = new TeamManager(plugin);
         this.doorManager = new DoorManager(this);
         this.kitManager = new KitManager(plugin);
-        this.scoreManager = new ScoreManager();
+        this.scoreManager = new ScoreManager(this);
         this.healthDisplay = new HealthDisplayManager();
         this.scoreboardManager = new SbManager(plugin);
         this.alertTasks = new ArrayList<>();
+        this.dropScores = new HashMap<>();
+        loadDropScores();
         reset();
+    }
+
+    public void loadDropScores() {
+        dropScores.clear();
+
+        ConfigurationSection section = plugin.getConfig().getConfigurationSection("drop_scores");
+        if (section == null) return;
+
+        for (String key : section.getKeys(false)) {
+            try {
+                Material material = Material.valueOf(key.toUpperCase());
+                int value = section.getInt(key);
+                dropScores.put(material, value);
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning("Matériau invalide dans drop_scores: " + key);
+            }
+        }
+    }
+
+    public Map<Material, Integer> getDropScores() {
+        return dropScores;
     }
 
     public SbManager getScoreboardManager() {
@@ -88,16 +116,16 @@ public class GameManager {
 
     public GameResult start() {
         if (!isState(GameState.WAITING)) return GameResult.ALREADY_STARTED;
-//        for (Player player : Bukkit.getOnlinePlayers()) {
-//            if (!kitManager.hasKit(player)) {
-//                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de kit.");
-//                return GameResult.PLAYER_HAS_NO_KIT;
-//            }
-//            if (teamManager.getTeams().stream().noneMatch(t -> t.hasMember(player))) {
-//                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de team.");
-//                return GameResult.PLAYER_HAS_NO_TEAM;
-//            }
-//        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!kitManager.hasKit(player)) {
+                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de kit.");
+                return GameResult.PLAYER_HAS_NO_KIT;
+            }
+            if (teamManager.getTeams().stream().noneMatch(t -> t.hasMember(player))) {
+                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de team.");
+                return GameResult.PLAYER_HAS_NO_TEAM;
+            }
+        }
 
         state = GameState.STARTED;
 
@@ -135,7 +163,14 @@ public class GameManager {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 1f);
             player.sendTitle(gameStartedStr, "", 10, 3 * 20, 10);
+            player.addPotionEffect(PotionEffectType.REGENERATION.createEffect(20, 255));
+            player.setFoodLevel(20);
+            player.setSaturation(20);
             scoreboardManager.create(player);
+
+            Team team = teamManager.getPlayerTeam(player).orElse(null);
+            if (team == null) continue;
+            player.teleport(teamManager.getTeamArenaLocation(team));
         }
 
         Bukkit.broadcastMessage("\n" + gameStartedStr + "\n ");

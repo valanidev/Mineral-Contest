@@ -14,22 +14,17 @@ import java.util.UUID;
 
 public class ScoreManager {
 
-    private final Map<Material, Integer> dropScores;
+    private final GameManager gameManager;
 
-    public ScoreManager() {
-        this.dropScores = Map.of(
-                Material.EMERALD, 300,
-                Material.DIAMOND, 200,
-                Material.IRON_INGOT, 20,
-                Material.GOLD_INGOT, 40
-        );
+    public ScoreManager(GameManager gameManager) {
+        this.gameManager = gameManager;
     }
 
     public int calculateScore(Collection<ItemStack> items) {
         int total = 0;
         for (ItemStack item : items) {
             if (item == null) continue;
-            int value = dropScores.getOrDefault(item.getType(), 0);
+            int value = gameManager.getDropScores().getOrDefault(item.getType(), 0);
             total += value * item.getAmount();
         }
         return total;

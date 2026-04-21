@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class KitRobust extends KitBase {
 
-    private static final float HEALTH_MULTIPLIER = 1.50f;
+    private static final float HEALTH_MULTIPLIER = 1.40f;
     private static final float KB_RESISTANCE = 0.10f;
     private static final float ATTACK_SPEED_MULTIPLIER = 0.90f;
 
@@ -42,7 +42,7 @@ public class KitRobust extends KitBase {
     public KitRobust() {
         super(
                 "Robuste",
-                "§a+ Vous avez 5 coeurs supplémentaires.\n§a+ Vous prenez 10% de knockback en moins.\n§c- Vous attaquez 10% plus lentement.",
+                "§a+ Vous avez 4 coeurs supplémentaires.\n§a+ Vous prenez 10% de knockback en moins.\n§c- Vous attaquez 10% plus lentement.",
                 Material.DIAMOND_CHESTPLATE
         );
     }

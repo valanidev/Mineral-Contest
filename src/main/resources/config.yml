@@ -31,6 +31,9 @@ arena:
     - material: IRON_INGOT
       min: 24
       max: 42
+    - material: COPPER_INGOT
+      min: 28
+      max: 58
 
 game:
   duration_seconds: 1200
@@ -70,8 +73,8 @@ game:
   reset: "&7La partie a été réinitialisée."
 
 drop:
-  min_interval_seconds: 240
-  max_interval_seconds: 600
+  min_interval_seconds: 200
+  max_interval_seconds: 400
   chest_placed: "&6Un drop est apparu en &e{X}&6, &e{Y}&6, &e{Z}&6 !"
   loot:
     - material: EMERALD
@@ -86,3 +89,14 @@ drop:
     - material: IRON_INGOT
       min: 28
       max: 36
+    - material: COPPER_INGOT
+      min: 30
+      max: 60
+
+drop_scores:
+  NETHERITE_INGOT: 2000
+  EMERALD: 300
+  DIAMOND: 200
+  GOLD_INGOT: 40
+  IRON_INGOT: 20
+  COPPER_INGOT: 4

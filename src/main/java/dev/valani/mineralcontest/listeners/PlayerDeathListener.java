@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Set;
 
 public class PlayerDeathListener implements Listener {
 
@@ -26,13 +27,14 @@ public class PlayerDeathListener implements Listener {
     private final GameManager gameManager;
     private final TeamManager teamManager;
     private final KitManager kitManager;
-    private final List<Material> allowedDrops = List.of(Material.DIAMOND, Material.IRON_INGOT, Material.GOLD_INGOT, Material.EMERALD);
+    private final Set<Material> allowedDrops;
 
     public PlayerDeathListener(Main plugin, GameManager gameManager) {
         this.plugin = plugin;
         this.gameManager = gameManager;
         this.teamManager = gameManager.getTeamManager();
         this.kitManager = gameManager.getKitManager();
+        allowedDrops = gameManager.getDropScores().keySet();
     }
 
     @EventHandler

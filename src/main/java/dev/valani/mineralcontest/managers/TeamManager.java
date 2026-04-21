@@ -115,6 +115,7 @@ public class TeamManager {
         getPlayerTeam(player).ifPresent(t -> t.removeMember(player));
 
         team.addMember(player);
+        Bukkit.broadcastMessage("§6§lTEAM §a" + player.getDisplayName() + " §aa rejoint la team " + team.getDisplayName() + "§a.");
         return GameResult.SUCCESS;
     }
 

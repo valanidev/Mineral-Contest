@@ -42,6 +42,7 @@ public class KitMiner extends KitBase {
             player.getInventory().setItem(slot, BLOCKED_ITEM);
         }
         Utils.applyItems(player);
+        player.getInventory().addItem(new ItemStack(Material.WOODEN_PICKAXE));
     }
 
     @Override
