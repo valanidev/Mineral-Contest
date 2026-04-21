@@ -3,6 +3,7 @@ package dev.valani.mineralcontest.managers;
 import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.GameResult;
 import dev.valani.mineralcontest.game.GameState;
+import dev.valani.mineralcontest.utils.FileManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -15,6 +16,7 @@ public class GameManager {
     private final ArenaManager arenaManager;
     private final DropManager dropManager;
     private final TeamManager teamManager;
+    private final DoorManager doorManager;
     private final KitManager kitManager;
     private final ScoreManager scoreManager;
     private final HealthDisplayManager healthDisplay;
@@ -26,6 +28,7 @@ public class GameManager {
         this.arenaManager = new ArenaManager(plugin, this);
         this.dropManager = new DropManager(plugin, this);
         this.teamManager = new TeamManager(plugin);
+        this.doorManager = new DoorManager(this);
         this.kitManager = new KitManager(plugin);
         this.scoreManager = new ScoreManager();
         this.healthDisplay = new HealthDisplayManager();
@@ -121,5 +124,9 @@ public class GameManager {
 
     public boolean isState(GameState s) {
         return state == s;
+    }
+
+    public DoorManager getDoorManager() {
+        return doorManager;
     }
 }

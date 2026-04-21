@@ -30,6 +30,10 @@ public class TeamManager {
         loadTeamArenas();
     }
 
+    public FileManager getTeamFile() {
+        return teamFile;
+    }
+
     private List<Team> loadTeamsFromConfig() {
         List<Team> result = new ArrayList<>();
         int maxPlayers = plugin.getInt("game.max_players_per_team");

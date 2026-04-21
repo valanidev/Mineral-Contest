@@ -1,6 +1,7 @@
 package dev.valani.mineralcontest.commands;
 
 import dev.valani.mineralcontest.Main;
+import dev.valani.mineralcontest.game.DoorOrientation;
 import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.utils.Utils;
@@ -27,7 +28,8 @@ public class CommandAdmin implements CommandExecutor, TabCompleter {
             "arena", List.of("set", "remove", "get", "tp"),
             "score", List.of("set", "get"),
             "ac", List.of("force"),
-            "drop", List.of("force")
+            "drop", List.of("force"),
+            "door", List.of("set", "remove", "get")
     );
     List<String> teamNames;
     List<Team> teams;
@@ -200,6 +202,36 @@ public class CommandAdmin implements CommandExecutor, TabCompleter {
 
                             team.setScore(value);
                             player.sendMessage("§aScore de l'équipe " + team.getDisplayName() + " §adéfini à §e" + value + "§a.");
+                        }
+                    }
+                }
+                case "door" -> {
+                    switch (args[1].toLowerCase()) {
+                        case "set" -> {
+                            DoorOrientation orientation = DoorOrientation.fromPlayerFacing(
+                                    player.getFacing()
+                            );
+                            Block target = player.getTargetBlockExact(6);
+                            if (target == null) {
+                                player.sendMessage("§cAucun bloc ciblé.");
+                                return false;
+                            }
+                            gameManager.getDoorManager().setDoor(team, target.getLocation(), orientation);
+                            player.sendMessage("§aPorte de l'équipe " + team.getDisplayName()
+                                    + " §adéfinie en §e" + Utils.formatLocation(target.getLocation())
+                                    + " §a(orientation: §e" + orientation.name() + "§a).");
+                        }
+                        case "remove" -> {
+                            gameManager.getDoorManager().removeDoor(team);
+                            player.sendMessage("§aPorte de l'équipe " + team.getDisplayName() + " §asupprimée.");
+                        }
+                        case "get" -> {
+                            gameManager.getDoorManager().getDoor(team).ifPresentOrElse(
+                                    door -> player.sendMessage("§aPorte de l'équipe " + team.getDisplayName()
+                                            + " §aen §e" + Utils.formatLocation(door.getCenter())
+                                            + " §a(§e" + door.getOrientation().name() + "§a)."),
+                                    () -> player.sendMessage("§cAucune porte définie pour " + team.getDisplayName() + "§c.")
+                            );
                         }
                     }
                 }
