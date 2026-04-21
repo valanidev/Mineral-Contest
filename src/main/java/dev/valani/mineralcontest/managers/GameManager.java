@@ -3,10 +3,19 @@ package dev.valani.mineralcontest.managers;
 import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.GameResult;
 import dev.valani.mineralcontest.game.GameState;
+import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.utils.FileManager;
-import org.bukkit.Bukkit;
+import dev.valani.mineralcontest.utils.Utils;
+import org.bukkit.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class GameManager {
 
@@ -21,6 +30,7 @@ public class GameManager {
     private final ScoreManager scoreManager;
     private final HealthDisplayManager healthDisplay;
 
+    private final List<BukkitTask> alertTasks;
     private BukkitTask gameEndTimer;
 
     public GameManager(Main plugin) {
@@ -32,6 +42,7 @@ public class GameManager {
         this.kitManager = new KitManager(plugin);
         this.scoreManager = new ScoreManager();
         this.healthDisplay = new HealthDisplayManager();
+        this.alertTasks = new ArrayList<>();
         reset();
     }
 
@@ -59,6 +70,15 @@ public class GameManager {
         return scoreManager;
     }
 
+    private void cancelAlertTasks() {
+        for (BukkitTask task : alertTasks) {
+            if (task != null && !task.isCancelled()) {
+                task.cancel();
+            }
+        }
+        alertTasks.clear();
+    }
+
     public GameResult start() {
         if (!isState(GameState.WAITING)) return GameResult.ALREADY_STARTED;
 //        for (Player player : Bukkit.getOnlinePlayers()) {
@@ -77,14 +97,41 @@ public class GameManager {
         int durationSeconds = plugin.getInt("game.duration_seconds");
         gameEndTimer = Bukkit.getScheduler().runTaskLater(plugin, this::end, durationSeconds * 20L);
 
+        List<Integer> alerts = plugin.getConfig().getIntegerList("game.alerts");
+
+        for (int alert : alerts) {
+
+            if (alert <= 0 || alert >= durationSeconds) continue;
+
+            long delay = (durationSeconds - alert) * 20L;
+
+            BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                String timeFormatted = Utils.formatTime(alert);
+
+                Bukkit.broadcastMessage("§6§lTIMER §e⏳ Il reste " + timeFormatted + " !");
+
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
+                }
+            }, delay);
+
+            alertTasks.add(task);
+        }
+
         dropManager.scheduleNextDrop();
         if (arenaManager != null && arenaManager.getChestLocation() != null) {
             arenaManager.scheduleAvailability();
         }
 
         healthDisplay.applyToAll();
+        String gameStartedStr = plugin.getString("game.started");
 
-        Bukkit.broadcastMessage(plugin.getString("game.started"));
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 1f);
+            player.sendTitle(gameStartedStr, "", 10, 3 * 20, 10);
+        }
+
+        Bukkit.broadcastMessage("\n" + gameStartedStr + "\n ");
         return GameResult.SUCCESS;
     }
 
@@ -93,16 +140,59 @@ public class GameManager {
 
         state = GameState.ENDED;
         cancelGameTimer();
+        cancelAlertTasks();
         dropManager.cancelDropTimer();
         healthDisplay.removeFromAll();
 
-        Bukkit.broadcastMessage(plugin.getString("game.ended"));
+        String gameEndedStr = plugin.getString("game.ended");
+        Bukkit.broadcastMessage("\n" + gameEndedStr + "\n ");
+
+        List<Team> teams = teamManager.getTeams();
+        Bukkit.broadcastMessage("§8§m                    §r  §6§lScores finaux §r §8§m                    ");
+        for (Team team : teams) {
+            Bukkit.broadcastMessage("§7- " + team.getDisplayName() + " §6→ §e§l" + team.getScore() + " POINTS");
+        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            spawnFireworks(player, 3);
+            player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 1f);
+            player.sendTitle(gameEndedStr, "", 10, 3 * 20, 10);
+            player.setGameMode(GameMode.CREATIVE);
+            player.setAllowFlight(true);
+            player.setFlying(true);
+        }
+
         return GameResult.SUCCESS;
+    }
+
+    public void spawnFireworks(Player player, int amount) {
+        Location loc = player.getLocation().add(0, 1, 0);
+        World world = loc.getWorld();
+        if (world == null) return;
+
+        Team playerTeam = teamManager.getPlayerTeam(player).orElse(null);
+        if (playerTeam == null) return;
+        Color color = Utils.translateChatColorToColor(playerTeam.getColor());
+        if (color == null) return;
+
+        Firework fw = (Firework) world.spawnEntity(loc, EntityType.FIREWORK_ROCKET);
+        FireworkMeta fwm = fw.getFireworkMeta();
+
+        fwm.setPower(2);
+        fwm.addEffect(FireworkEffect.builder().withColor(color).flicker(true).build());
+
+        fw.setFireworkMeta(fwm);
+        fw.detonate();
+
+        for (int i = 0; i < amount; i++) {
+            Firework fw2 = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK_ROCKET);
+            fw2.setFireworkMeta(fwm);
+        }
     }
 
     public void reset() {
         state = GameState.WAITING;                              // Reset game state to waiting
-        cancelGameTimer();                                          // Cancel the end timer
+        cancelGameTimer();
+        cancelAlertTasks();
         dropManager.cancelDropTimer();                              // Cancel the drop timer
         teamManager.clearAll();                             // Clear all teams
         kitManager.resetAll();
@@ -111,6 +201,9 @@ public class GameManager {
             p.setPlayerListName(p.getName());
             p.setHealth(20);
             p.setFoodLevel(20);
+            p.setGameMode(GameMode.SURVIVAL);
+            p.setAllowFlight(false);
+            p.setFlying(false);
         });
         Bukkit.broadcastMessage(plugin.getString("game.reset"));                                                // Reset player names
     }

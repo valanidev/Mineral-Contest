@@ -33,7 +33,18 @@ arena:
       max: 4
 
 game:
-  duration_seconds: 3600
+  duration_seconds: 60
+  alerts:
+    - 600
+    - 300
+    - 60
+    - 30
+    - 5
+    - 4
+    - 3
+    - 2
+    - 1
+
   max_players_per_team: 4
 
   teams:
