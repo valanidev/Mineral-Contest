@@ -19,7 +19,6 @@ public class PlayerJoinListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         gameManager.getHealthDisplay().applyToPlayer(event.getPlayer());
-
         event.setJoinMessage("§a+ " + player.getDisplayName() + " §aa rejoint le serveur.");
     }
 

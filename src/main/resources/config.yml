@@ -9,8 +9,8 @@ plugin:
 
 arena:
   chest_block: 'CHEST'
-  cooldown_min_seconds: 300
-  cooldown_max_seconds: 600
+  cooldown_min_seconds: 180
+  cooldown_max_seconds: 300
   chest_removed: "&aCoffre d'arène supprimé."
   chest_placed: "&aCoffre d'arène placé."
   chest_not_placed: "&cLe coffre n'est pas encore placé."
@@ -19,21 +19,21 @@ arena:
   chest_unavailable: "&cLe coffre d'arène n'est pas disponible pour le moment."
   chest_in_use: "&cUn joueur est en train d'ouvrir le coffre d'arène !"
   chest_rewards:
-    - material: DIAMOND
+    - material: EMERALD
       min: 1
       max: 3
-    - material: IRON_INGOT
-      min: 10
-      max: 15
+    - material: DIAMOND
+      min: 2
+      max: 6
     - material: GOLD_INGOT
-      min: 3
-      max: 7
-    - material: EMERALD
-      min: 0
-      max: 4
+      min: 12
+      max: 20
+    - material: IRON_INGOT
+      min: 24
+      max: 42
 
 game:
-  duration_seconds: 300
+  duration_seconds: 1200
   alerts:
     - 600
     - 300
@@ -45,7 +45,7 @@ game:
     - 2
     - 1
 
-  max_players_per_team: 4
+  max_players_per_team: 3
 
   teams:
     red:
@@ -70,19 +70,19 @@ game:
   reset: "&7La partie a été réinitialisée."
 
 drop:
-  min_interval_seconds: 300
-  max_interval_seconds: 900
+  min_interval_seconds: 240
+  max_interval_seconds: 600
   chest_placed: "&6Un drop est apparu en &e{X}&6, &e{Y}&6, &e{Z}&6 !"
   loot:
-    - material: DIAMOND
-      min: 2
-      max: 6
-    - material: IRON_INGOT
-      min: 24
-      max: 36
-    - material: GOLD_INGOT
-      min: 8
-      max: 20
     - material: EMERALD
       min: 0
-      max: 3
+      max: 2
+    - material: DIAMOND
+      min: 2
+      max: 4
+    - material: GOLD_INGOT
+      min: 16
+      max: 20
+    - material: IRON_INGOT
+      min: 28
+      max: 36

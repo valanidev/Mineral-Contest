@@ -28,9 +28,12 @@ public class GameManager {
     private final KitManager kitManager;
     private final ScoreManager scoreManager;
     private final HealthDisplayManager healthDisplay;
+    private final SbManager scoreboardManager;
 
     private final List<BukkitTask> alertTasks;
     private BukkitTask gameEndTimer;
+
+    private long endTimeMillis;
 
     public GameManager(Main plugin) {
         this.plugin = plugin;
@@ -41,8 +44,13 @@ public class GameManager {
         this.kitManager = new KitManager(plugin);
         this.scoreManager = new ScoreManager();
         this.healthDisplay = new HealthDisplayManager();
+        this.scoreboardManager = new SbManager(plugin);
         this.alertTasks = new ArrayList<>();
         reset();
+    }
+
+    public SbManager getScoreboardManager() {
+        return scoreboardManager;
     }
 
     public ArenaManager getArenaManager() {
@@ -94,6 +102,7 @@ public class GameManager {
         state = GameState.STARTED;
 
         int durationSeconds = plugin.getInt("game.duration_seconds");
+        endTimeMillis = System.currentTimeMillis() + (durationSeconds * 1000L);
         gameEndTimer = Bukkit.getScheduler().runTaskLater(plugin, this::end, durationSeconds * 20L);
 
         List<Integer> alerts = plugin.getConfig().getIntegerList("game.alerts");
@@ -126,10 +135,16 @@ public class GameManager {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 1f);
             player.sendTitle(gameStartedStr, "", 10, 3 * 20, 10);
+            scoreboardManager.create(player);
         }
 
         Bukkit.broadcastMessage("\n" + gameStartedStr + "\n ");
         return GameResult.SUCCESS;
+    }
+
+    public int getTimeLeftSeconds() {
+        long remaining = endTimeMillis - System.currentTimeMillis();
+        return (int) Math.max(0, remaining / 1000);
     }
 
     public GameResult end() {
@@ -140,6 +155,7 @@ public class GameManager {
         cancelAlertTasks();
         dropManager.cancelDropTimer();
         healthDisplay.removeFromAll();
+        scoreboardManager.resetAll();
 
         String gameEndedStr = plugin.getString("game.ended");
         Bukkit.broadcastMessage("\n" + gameEndedStr + "\n ");
@@ -193,6 +209,7 @@ public class GameManager {
         dropManager.cancelDropTimer();                              // Cancel the drop timer
         teamManager.clearAll();                             // Clear all teams
         kitManager.resetAll();
+        scoreboardManager.resetAll();
         Bukkit.getOnlinePlayers().forEach(p -> {
             p.setDisplayName(p.getName());
             p.setPlayerListName(p.getName());

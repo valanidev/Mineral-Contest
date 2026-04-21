@@ -81,6 +81,15 @@ public class Utils {
         return seconds + " seconde" + (seconds > 1 ? "s" : "");
     }
 
+    public static String formatSbTimer(int seconds) {
+        if (seconds < 0) seconds = 0;
+
+        int minutes = seconds / 60;
+        int sec = seconds % 60;
+
+        return String.format("%02d:%02d", minutes, sec);
+    }
+
     public static Team getTeam(Player player) {
         return Main.getInstance()
                 .getGameManager()
