@@ -1,10 +1,13 @@
 package dev.valani.mineralcontest.game.kits;
 
+import dev.valani.mineralcontest.game.Team;
+import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public abstract class KitBase {
 

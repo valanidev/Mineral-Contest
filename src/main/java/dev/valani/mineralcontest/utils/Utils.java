@@ -1,7 +1,9 @@
 package dev.valani.mineralcontest.utils;
 
+import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.Team;
 import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
@@ -79,6 +81,14 @@ public class Utils {
         return seconds + " seconde" + (seconds > 1 ? "s" : "");
     }
 
+    public static Team getTeam(Player player) {
+        return Main.getInstance()
+                .getGameManager()
+                .getTeamManager()
+                .getPlayerTeam(player)
+                .orElse(null);
+    }
+
     public static ItemStack buildHelmet(Team team) {
         ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
         if (team == null) return helmet;
@@ -87,5 +97,26 @@ public class Utils {
         meta.setColor(Utils.translateChatColorToColor(team.getColor()));
         helmet.setItemMeta(meta);
         return helmet;
+    }
+
+    public static ItemStack createTeamHelmet(Player player) {
+        Team team = Utils.getTeam(player);
+        if (team == null) return new ItemStack(Material.LEATHER_HELMET);
+        return Utils.buildHelmet(team);
+    }
+
+    public static void applyItems(Player player) {
+        ItemStack helmet = createTeamHelmet(player);
+        ItemStack chestplate = new ItemStack(Material.IRON_CHESTPLATE);
+        ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS);
+        ItemStack boots = new ItemStack(Material.IRON_BOOTS);
+        ItemStack sword = new ItemStack(Material.IRON_SWORD);
+        ItemStack food = new ItemStack(Material.COOKED_BEEF, 16);
+        player.getInventory().setHelmet(helmet);
+        player.getInventory().setChestplate(chestplate);
+        player.getInventory().setLeggings(leggings);
+        player.getInventory().setBoots(boots);
+        player.getInventory().setItem(0, sword);
+        player.getInventory().setItem(8, food);
     }
 }

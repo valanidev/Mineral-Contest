@@ -1,5 +1,6 @@
 package dev.valani.mineralcontest.game.kits;
 
+import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -40,17 +41,19 @@ public class KitMiner extends KitBase {
         for (int slot : BLOCKED_SLOTS) {
             player.getInventory().setItem(slot, BLOCKED_ITEM);
         }
+        Utils.applyItems(player);
     }
 
     @Override
     public void remove(Player player) {
         removeModifier(player.getAttribute(Attribute.BLOCK_BREAK_SPEED), BLOCK_BREAK_SPEED_MODIFIER.getKey());
-        for (int slot : BLOCKED_SLOTS) {
-            ItemStack current = player.getInventory().getItem(slot);
-            if (current != null && current.isSimilar(BLOCKED_ITEM)) {
-                player.getInventory().setItem(slot, null);
-            }
-        }
+//        for (int slot : BLOCKED_SLOTS) {
+//            ItemStack current = player.getInventory().getItem(slot);
+//            if (current != null && current.isSimilar(BLOCKED_ITEM)) {
+//                player.getInventory().setItem(slot, null);
+//            }
+//        }
+        player.getInventory().clear();
     }
 
     public boolean isBlockedSlot(int slot) {

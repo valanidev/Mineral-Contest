@@ -33,7 +33,7 @@ arena:
       max: 4
 
 game:
-  duration_seconds: 60
+  duration_seconds: 300
   alerts:
     - 600
     - 300

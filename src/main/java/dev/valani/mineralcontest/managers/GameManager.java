@@ -99,11 +99,9 @@ public class GameManager {
         List<Integer> alerts = plugin.getConfig().getIntegerList("game.alerts");
 
         for (int alert : alerts) {
-
             if (alert <= 0 || alert >= durationSeconds) continue;
 
             long delay = (durationSeconds - alert) * 20L;
-
             BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 String timeFormatted = Utils.formatTime(alert);
 

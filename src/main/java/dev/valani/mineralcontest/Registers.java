@@ -13,7 +13,7 @@ public class Registers {
     public Registers(Main plugin) {
         PluginManager pm = Bukkit.getPluginManager();
 
-        GameManager gameManager = new GameManager(plugin);
+        GameManager gameManager = plugin.getGameManager();
 
         TeamSelectorMenu teamSelectorMenu = new TeamSelectorMenu(gameManager.getTeamManager());
         KitSelectorMenu kitSelectorMenu = new KitSelectorMenu(gameManager.getKitManager());

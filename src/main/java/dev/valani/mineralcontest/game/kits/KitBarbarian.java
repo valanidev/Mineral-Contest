@@ -1,5 +1,7 @@
 package dev.valani.mineralcontest.game.kits;
 
+import dev.valani.mineralcontest.game.Team;
+import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -7,6 +9,8 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlotGroup;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Objects;
 
@@ -42,11 +46,13 @@ public class KitBarbarian extends KitBase {
         applyModifier(attack, ATTACK_MODIFIER);
         AttributeInstance speed = player.getAttribute(Attribute.MOVEMENT_SPEED);
         applyModifier(speed, SPEED_MODIFIER);
+        Utils.applyItems(player);
     }
 
     @Override
     public void remove(Player player) {
         removeModifier(player.getAttribute(Attribute.ATTACK_DAMAGE), ATTACK_MODIFIER.getKey());
         removeModifier(player.getAttribute(Attribute.MOVEMENT_SPEED), SPEED_MODIFIER.getKey());
+        player.getInventory().clear();
     }
 }

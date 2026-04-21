@@ -1,5 +1,6 @@
 package dev.valani.mineralcontest.game.kits;
 
+import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -50,6 +51,7 @@ public class KitAgile extends KitBase {
         applyModifier(fallDamage, FALL_DAMAGE_MODIFIER);
         AttributeInstance maxHealth = player.getAttribute(Attribute.MAX_HEALTH);
         applyModifier(maxHealth, MAX_HEALTH_MODIFIER);
+        Utils.applyItems(player);
     }
 
     @Override
@@ -57,5 +59,6 @@ public class KitAgile extends KitBase {
         removeModifier(player.getAttribute(Attribute.ATTACK_DAMAGE), SPEED_MODIFIER.getKey());
         removeModifier(player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER), FALL_DAMAGE_MODIFIER.getKey());
         removeModifier(player.getAttribute(Attribute.MAX_HEALTH), MAX_HEALTH_MODIFIER.getKey());
+        player.getInventory().clear();
     }
 }

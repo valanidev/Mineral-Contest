@@ -1,5 +1,6 @@
 package dev.valani.mineralcontest.game.kits;
 
+import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -54,6 +55,7 @@ public class KitRobust extends KitBase {
         applyModifier(kb, KB_MODIFIER);
         AttributeInstance attackSpeed = player.getAttribute(Attribute.ATTACK_SPEED);
         applyModifier(attackSpeed, ATTACK_SPEED_MODIFIER);
+        Utils.applyItems(player);
     }
 
     @Override
@@ -61,5 +63,6 @@ public class KitRobust extends KitBase {
         removeModifier(player.getAttribute(Attribute.MAX_HEALTH), HEALTH_MODIFIER.getKey());
         removeModifier(player.getAttribute(Attribute.KNOCKBACK_RESISTANCE), KB_MODIFIER.getKey());
         removeModifier(player.getAttribute(Attribute.ATTACK_SPEED), ATTACK_SPEED_MODIFIER.getKey());
+        player.getInventory().clear();
     }
 }
