@@ -7,6 +7,7 @@ import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -117,13 +118,13 @@ public class GameManager {
     public GameResult start() {
         if (!isState(GameState.WAITING)) return GameResult.ALREADY_STARTED;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!kitManager.hasKit(player)) {
-                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de kit.");
-                return GameResult.PLAYER_HAS_NO_KIT;
-            }
             if (teamManager.getTeams().stream().noneMatch(t -> t.hasMember(player))) {
                 player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de team.");
                 return GameResult.PLAYER_HAS_NO_TEAM;
+            }
+            if (!kitManager.hasKit(player)) {
+                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de kit.");
+                return GameResult.PLAYER_HAS_NO_KIT;
             }
         }
 
@@ -164,6 +165,7 @@ public class GameManager {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 1f);
             player.sendTitle(gameStartedStr, "", 10, 3 * 20, 10);
+            player.addPotionEffect(PotionEffectType.NIGHT_VISION.createEffect(Integer.MAX_VALUE, 0));
             player.addPotionEffect(PotionEffectType.REGENERATION.createEffect(20, 255));
             player.setFoodLevel(20);
             player.setSaturation(20);
@@ -175,9 +177,18 @@ public class GameManager {
         }
 
         World world = Bukkit.getWorld("world");
-        if (world != null) world.setTime(0);
+        if (world != null) {
+            world.setTime(0);
 
-        Bukkit.broadcastMessage("\n" + gameStartedStr + "\n ");
+            for (Entity entity : world.getEntities()) {
+                List<EntityType> types = List.of(EntityType.CREEPER, EntityType.SKELETON, EntityType.ZOMBIE, EntityType.SPIDER);
+                if (types.contains(entity.getType())) {
+                    entity.remove();
+                }
+            }
+        }
+
+        Bukkit.broadcastMessage("\n§6§lSTART " + gameStartedStr + "\n ");
         return GameResult.SUCCESS;
     }
 
@@ -197,7 +208,7 @@ public class GameManager {
         scoreboardManager.resetAll();
 
         String gameEndedStr = plugin.getString("game.ended");
-        Bukkit.broadcastMessage("\n" + gameEndedStr + "\n ");
+        Bukkit.broadcastMessage("\n§6§lEND " + gameEndedStr + "\n ");
 
         List<Team> teams = teamManager.getTeams();
         Bukkit.broadcastMessage("§8§m                    §r  §6§lScores finaux §r §8§m                    ");
@@ -257,8 +268,9 @@ public class GameManager {
             p.setGameMode(GameMode.SURVIVAL);
             p.setAllowFlight(false);
             p.setFlying(false);
-        });
-        Bukkit.broadcastMessage(plugin.getString("game.reset"));                                                // Reset player names
+        });                                             // Reset player names
+
+        Bukkit.broadcastMessage("\n§6§lRESET " + plugin.getString("game.reset") + "\n ");
     }
 
     private void cancelGameTimer() {

@@ -83,7 +83,7 @@ public class DoorManager {
         doors.forEach((team, door) -> {
             double distance = player.getLocation().distance(door.getCenter());
 
-            if (team.equals(playerTeam) && distance <= 3.0) {
+            if (team.equals(playerTeam) && distance <= 3.5) {
                 door.open();
             } else if (door.isOpen() && !anyTeamMemberNearby(team, door)) {
                 door.close();
