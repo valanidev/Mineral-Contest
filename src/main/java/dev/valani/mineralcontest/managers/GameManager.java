@@ -119,11 +119,9 @@ public class GameManager {
         if (!isState(GameState.WAITING)) return GameResult.ALREADY_STARTED;
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (teamManager.getTeams().stream().noneMatch(t -> t.hasMember(player))) {
-                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de team.");
                 return GameResult.PLAYER_HAS_NO_TEAM;
             }
             if (!kitManager.hasKit(player)) {
-                player.sendMessage("§cUn ou plusieurs joueurs n'ont pas de kit.");
                 return GameResult.PLAYER_HAS_NO_KIT;
             }
         }
@@ -268,7 +266,7 @@ public class GameManager {
             p.setGameMode(GameMode.SURVIVAL);
             p.setAllowFlight(false);
             p.setFlying(false);
-        });                                             // Reset player names
+        });
 
         Bukkit.broadcastMessage("\n§6§lRESET " + plugin.getString("game.reset") + "\n ");
     }

@@ -73,6 +73,11 @@ game:
   reset: "&7La partie a été réinitialisée."
 
 drop:
+  spawn_location:
+    min_x: 100
+    max_x: 400
+    min_z: 100
+    max_z: 400
   min_interval_seconds: 200
   max_interval_seconds: 400
   chest_placed: "&6Un drop est apparu en &e{X}&6, &e{Y}&6, &e{Z}&6 !"

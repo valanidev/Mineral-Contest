@@ -10,21 +10,43 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Drop {
+
+    private final int maxAttempts = 4;
+
     public Drop(Main plugin) {
-        int minX = -400;
-        int maxX = 400;
-        int minZ = -400;
-        int maxZ = 400;
-
-        World world = Bukkit.getWorld("world");
-        if (world == null) return;
-
+        int minX = plugin.getConfig().getInt("drop.spawn_location.min_x");
+        int maxX = plugin.getConfig().getInt("drop.spawn_location.max_x");
+        int minZ = plugin.getConfig().getInt("drop.spawn_location.min_z");
+        int maxZ = plugin.getConfig().getInt("drop.spawn_location.max_z");
+        World world = Bukkit.getWorlds().getFirst();
         ThreadLocalRandom rng = ThreadLocalRandom.current();
-        int x = rng.nextInt(minX, maxX + 1);
-        int z = rng.nextInt(minZ, maxZ + 1);
+        int attempts = 0;
 
-        int y = world.getHighestBlockYAt(x, z, HeightMap.MOTION_BLOCKING_NO_LEAVES);
-        Location targetLocation = new Location(world, x, y + 1, z);
+        Location targetLocation = null;
+        while (attempts < maxAttempts) {
+            attempts++;
+            int x = rng.nextBoolean()
+                    ? rng.nextInt(minX, maxX + 1)
+                    : rng.nextInt(-maxX, -minX + 1);
+            int z = rng.nextBoolean()
+                    ? rng.nextInt(minZ, maxZ + 1)
+                    : rng.nextInt(-maxZ, -minZ + 1);
+            int y = world.getHighestBlockYAt(x, z, HeightMap.MOTION_BLOCKING_NO_LEAVES);
+            Location loc = new Location(world, x, y, z);
+            Material ground = loc.getBlock().getType();
+
+            if (ground == Material.WATER || ground == Material.LAVA) continue;
+            if (!ground.isSolid()) continue;
+
+            targetLocation = loc.clone().add(0, 1, 0);
+            break;
+        }
+
+        if (targetLocation == null) {
+            Bukkit.getConsoleSender().sendMessage("§cImpossible de trouver un emplacement pour le drop.");
+            return;
+        }
+
         targetLocation.getBlock().setType(Material.CHEST);
 
         if (targetLocation.getBlock().getState() instanceof Chest chest) {
@@ -32,9 +54,9 @@ public class Drop {
         }
 
         String message = plugin.getString("drop.chest_placed")
-                .replace("{X}", String.valueOf(x))
-                .replace("{Y}", String.valueOf(y))
-                .replace("{Z}", String.valueOf(z));
+                .replace("{X}", String.valueOf(targetLocation.getBlockX()))
+                .replace("{Y}", String.valueOf(targetLocation.getBlockY()))
+                .replace("{Z}", String.valueOf(targetLocation.getBlockZ()));
         Bukkit.broadcastMessage(plugin.getPrefix() + message);
     }
 
