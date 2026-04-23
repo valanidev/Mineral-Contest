@@ -9,12 +9,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 public class CommandEnd implements CommandExecutor {
-    private final Main plugin;
+    private final Main plugin = Main.getInstance();
     private final GameManager gameManager;
 
-    public CommandEnd(Main plugin, GameManager gameManager) {
-        this.plugin = plugin;
-        this.gameManager = gameManager;
+    public CommandEnd() {
+        this.gameManager = plugin.getGameManager();
     }
 
     @Override

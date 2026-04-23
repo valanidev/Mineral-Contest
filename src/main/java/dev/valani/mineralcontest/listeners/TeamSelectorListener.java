@@ -1,5 +1,6 @@
 package dev.valani.mineralcontest.listeners;
 
+import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.GameResult;
 import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.game.Team;
@@ -17,13 +18,15 @@ import java.util.List;
 
 public class TeamSelectorListener implements Listener {
 
+    private final Main plugin;
     private final GameManager gameManager;
     private final TeamManager teamManager;
     private final TeamSelectorMenu menu;
 
-    public TeamSelectorListener(GameManager gameManager, TeamManager teamManager, TeamSelectorMenu menu) {
-        this.gameManager = gameManager;
-        this.teamManager = teamManager;
+    public TeamSelectorListener(Main plugin, TeamSelectorMenu menu) {
+        this.plugin = plugin;
+        this.gameManager = plugin.getGameManager();
+        this.teamManager = plugin.getGameManager().getTeamManager();
         this.menu = menu;
     }
 

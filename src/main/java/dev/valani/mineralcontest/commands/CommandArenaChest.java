@@ -9,12 +9,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandArenaChest implements CommandExecutor {
-    private final Main plugin;
+    private final Main plugin = Main.getInstance();
     private final ArenaManager arenaManager;
 
-    public CommandArenaChest(Main plugin, ArenaManager arenaManager) {
-        this.plugin = plugin;
-        this.arenaManager = arenaManager;
+    public CommandArenaChest() {
+        this.arenaManager = plugin.getGameManager().getArenaManager();
     }
 
     @Override
@@ -58,5 +57,5 @@ public class CommandArenaChest implements CommandExecutor {
 
         return true;
     }
-    
+
 }

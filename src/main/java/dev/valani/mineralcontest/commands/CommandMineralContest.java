@@ -14,12 +14,11 @@ import org.bukkit.entity.Player;
 
 public class CommandMineralContest implements CommandExecutor {
 
-    private final Main plugin;
+    private final Main plugin = Main.getInstance();
     private final GameManager gameManager;
 
-    public CommandMineralContest(Main plugin, GameManager gameManager) {
-        this.plugin = plugin;
-        this.gameManager = gameManager;
+    public CommandMineralContest() {
+        this.gameManager = plugin.getGameManager();
     }
 
     @Override

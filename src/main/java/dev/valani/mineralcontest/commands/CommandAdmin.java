@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class CommandAdmin implements CommandExecutor, TabCompleter {
 
-    private final Main plugin;
+    private final Main plugin = Main.getInstance();
     private final GameManager gameManager;
 
     private final Map<String, List<String>> commandStructure = Map.of(
@@ -34,9 +34,8 @@ public class CommandAdmin implements CommandExecutor, TabCompleter {
     List<String> teamNames;
     List<Team> teams;
 
-    public CommandAdmin(Main plugin, GameManager gameManager) {
-        this.plugin = plugin;
-        this.gameManager = gameManager;
+    public CommandAdmin() {
+        this.gameManager = plugin.getGameManager();
         teams = gameManager.getTeamManager().getTeams();
         teamNames = teams.stream().map(Team::getName).toList();
     }

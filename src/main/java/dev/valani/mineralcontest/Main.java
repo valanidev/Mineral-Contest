@@ -12,7 +12,6 @@ import java.util.List;
 public class Main extends JavaPlugin {
     private static Main instance;
     private String prefix;
-    private Registers registers;
     private GameManager gameManager;
 
     @Override
@@ -21,15 +20,15 @@ public class Main extends JavaPlugin {
         saveDefaultConfig();
         prefix = ChatColor.translateAlternateColorCodes('&',
                 getConfig().getString("plugin.prefix", "[MineralContest] "));
-        Bukkit.getConsoleSender().sendMessage(getPrefix() + getString("plugin.enabled"));
+        Bukkit.getConsoleSender().sendMessage(prefix + getString("plugin.enabled"));
 
-        gameManager = new GameManager(this);
-        registers = new Registers(this);
+        gameManager = new GameManager();
+        new Registers();
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getConsoleSender().sendMessage(getPrefix() + getString("plugin.disabled"));
+        Bukkit.getConsoleSender().sendMessage(prefix + getString("plugin.disabled"));
     }
 
     public String getPrefix() {
@@ -48,7 +47,6 @@ public class Main extends JavaPlugin {
     public int getInt(String key) {
         return getConfig().getInt(key);
     }
-
 
     public static Main getInstance() {
         return instance;

@@ -29,9 +29,9 @@ public class PlayerDeathListener implements Listener {
     private final KitManager kitManager;
     private final Set<Material> allowedDrops;
 
-    public PlayerDeathListener(Main plugin, GameManager gameManager) {
+    public PlayerDeathListener(Main plugin) {
         this.plugin = plugin;
-        this.gameManager = gameManager;
+        this.gameManager = plugin.getGameManager();
         this.teamManager = gameManager.getTeamManager();
         this.kitManager = gameManager.getKitManager();
         allowedDrops = gameManager.getDropScores().keySet();

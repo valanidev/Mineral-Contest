@@ -39,9 +39,9 @@ public class ArenaChestListener implements Listener {
     private BukkitTask animationTask;
     private Player animatingPlayer;
 
-    public ArenaChestListener(Main plugin, ArenaManager arenaManager) {
+    public ArenaChestListener(Main plugin) {
         this.plugin = plugin;
-        this.arenaManager = arenaManager;
+        this.arenaManager = plugin.getGameManager().getArenaManager();
         this.arenaChestInventory = Bukkit.createInventory(null, 27, "§6§lArena Chest");
 
         this.redPane = new ItemStack(Material.RED_STAINED_GLASS_PANE);

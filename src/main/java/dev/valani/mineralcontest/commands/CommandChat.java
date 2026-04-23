@@ -13,12 +13,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class CommandChat implements CommandExecutor {
-    private final Main plugin;
+    private final Main plugin = Main.getInstance();
     private final TeamManager teamManager;
 
-    public CommandChat(Main plugin, TeamManager teamManager) {
-        this.plugin = plugin;
-        this.teamManager = teamManager;
+    public CommandChat() {
+        this.teamManager = plugin.getGameManager().getTeamManager();
     }
 
     @Override

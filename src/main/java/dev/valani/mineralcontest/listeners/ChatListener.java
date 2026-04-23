@@ -1,5 +1,6 @@
 package dev.valani.mineralcontest.listeners;
 
+import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.managers.TeamManager;
 import org.bukkit.ChatColor;
@@ -15,8 +16,8 @@ public class ChatListener implements Listener {
 
     private final TeamManager teamManager;
 
-    public ChatListener(TeamManager teamManager) {
-        this.teamManager = teamManager;
+    public ChatListener(Main plugin) {
+        this.teamManager = plugin.getGameManager().getTeamManager();
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

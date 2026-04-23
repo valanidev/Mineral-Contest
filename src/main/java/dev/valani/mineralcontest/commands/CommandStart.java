@@ -10,12 +10,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 public class CommandStart implements CommandExecutor {
-    private final Main plugin;
+
+    private final Main plugin = Main.getInstance();
     private final GameManager gameManager;
 
-    public CommandStart(Main plugin, GameManager gameManager) {
-        this.plugin = plugin;
-        this.gameManager = gameManager;
+    public CommandStart() {
+        this.gameManager = plugin.getGameManager();
     }
 
     @Override

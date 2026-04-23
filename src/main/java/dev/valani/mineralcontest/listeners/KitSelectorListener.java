@@ -1,5 +1,6 @@
 package dev.valani.mineralcontest.listeners;
 
+import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.game.kits.KitBase;
 import dev.valani.mineralcontest.managers.GameManager;
@@ -17,13 +18,15 @@ import java.util.List;
 
 public class KitSelectorListener implements Listener {
 
+    private final Main plugin;
     private final GameManager gameManager;
     private final KitManager kitManager;
     private final KitSelectorMenu menu;
 
-    public KitSelectorListener(GameManager gameManager, KitManager kitManager, KitSelectorMenu menu) {
-        this.gameManager = gameManager;
-        this.kitManager = kitManager;
+    public KitSelectorListener(Main plugin, KitSelectorMenu menu) {
+        this.plugin = plugin;
+        this.gameManager = plugin.getGameManager();
+        this.kitManager = plugin.getGameManager().getKitManager();
         this.menu = menu;
     }
 

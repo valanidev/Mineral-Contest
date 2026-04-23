@@ -17,14 +17,13 @@ import java.util.*;
 
 public class CommandArena implements CommandExecutor {
 
-    private final Main plugin;
+    private final Main plugin = Main.getInstance();
     private final GameManager gameManager;
 
     private final Set<UUID> teleporting;
 
-    public CommandArena(Main plugin, GameManager gameManager) {
-        this.plugin = plugin;
-        this.gameManager = gameManager;
+    public CommandArena() {
+        this.gameManager = plugin.getGameManager();
         this.teleporting = new HashSet<>();
     }
 

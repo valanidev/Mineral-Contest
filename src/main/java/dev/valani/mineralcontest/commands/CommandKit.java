@@ -12,14 +12,13 @@ import org.bukkit.entity.Player;
 
 public class CommandKit implements CommandExecutor {
 
-    private final Main plugin;
+    private final Main plugin = Main.getInstance();
     private final GameManager gameManager;
     private final KitSelectorMenu kitSelectorMenu;
 
-    public CommandKit(Main plugin, KitSelectorMenu kitSelectorMenu, GameManager gameManager) {
-        this.plugin = plugin;
+    public CommandKit(KitSelectorMenu kitSelectorMenu) {
         this.kitSelectorMenu = kitSelectorMenu;
-        this.gameManager = gameManager;
+        this.gameManager = plugin.getGameManager();
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

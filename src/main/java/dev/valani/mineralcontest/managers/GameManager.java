@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class GameManager {
 
-    private final Main plugin;
+    private final Main plugin = Main.getInstance();
     private GameState state;
 
     private final ArenaManager arenaManager;
@@ -39,13 +39,12 @@ public class GameManager {
     private final List<BukkitTask> alertTasks;
     private BukkitTask gameEndTimer;
 
-    private Map<Material, Integer> dropScores;
+    private final Map<Material, Integer> dropScores;
     private final int kitSelectionTimer;
 
     private long endTimeMillis;
 
-    public GameManager(Main plugin) {
-        this.plugin = plugin;
+    public GameManager() {
         this.arenaManager = new ArenaManager(plugin, this);
         this.dropManager = new DropManager(plugin, this);
         this.teamManager = new TeamManager(plugin);
@@ -76,38 +75,6 @@ public class GameManager {
                 plugin.getLogger().warning("Matériau invalide dans drop_scores: " + key);
             }
         }
-    }
-
-    public Map<Material, Integer> getDropScores() {
-        return dropScores;
-    }
-
-    public SbManager getScoreboardManager() {
-        return scoreboardManager;
-    }
-
-    public ArenaManager getArenaManager() {
-        return arenaManager;
-    }
-
-    public TeamManager getTeamManager() {
-        return teamManager;
-    }
-
-    public HealthDisplayManager getHealthDisplay() {
-        return healthDisplay;
-    }
-
-    public DropManager getDropManager() {
-        return dropManager;
-    }
-
-    public KitManager getKitManager() {
-        return kitManager;
-    }
-
-    public ScoreManager getScoreManager() {
-        return scoreManager;
     }
 
     private void cancelAlertTasks() {
@@ -322,5 +289,37 @@ public class GameManager {
 
     public DoorManager getDoorManager() {
         return doorManager;
+    }
+
+    public Map<Material, Integer> getDropScores() {
+        return dropScores;
+    }
+
+    public SbManager getScoreboardManager() {
+        return scoreboardManager;
+    }
+
+    public ArenaManager getArenaManager() {
+        return arenaManager;
+    }
+
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
+
+    public HealthDisplayManager getHealthDisplay() {
+        return healthDisplay;
+    }
+
+    public DropManager getDropManager() {
+        return dropManager;
+    }
+
+    public KitManager getKitManager() {
+        return kitManager;
+    }
+
+    public ScoreManager getScoreManager() {
+        return scoreManager;
     }
 }

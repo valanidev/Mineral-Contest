@@ -11,14 +11,13 @@ import org.bukkit.entity.Player;
 
 public class CommandTeam implements CommandExecutor {
 
-    private final Main plugin;
+    private final Main plugin = Main.getInstance();
     private final GameManager gameManager;
     private final TeamSelectorMenu teamSelectorMenu;
 
-    public CommandTeam(Main plugin, TeamSelectorMenu teamSelectorMenu, GameManager gameManager) {
-        this.plugin = plugin;
+    public CommandTeam(TeamSelectorMenu teamSelectorMenu) {
         this.teamSelectorMenu = teamSelectorMenu;
-        this.gameManager = gameManager;
+        this.gameManager = plugin.getGameManager();
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

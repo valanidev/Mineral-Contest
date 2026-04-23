@@ -10,33 +10,34 @@ import org.bukkit.plugin.PluginManager;
 
 public class Registers {
 
-    public Registers(Main plugin) {
-        PluginManager pm = Bukkit.getPluginManager();
+    private final Main plugin = Main.getInstance();
 
+    public Registers() {
+        PluginManager pm = Bukkit.getPluginManager();
         GameManager gameManager = plugin.getGameManager();
 
         TeamSelectorMenu teamSelectorMenu = new TeamSelectorMenu(gameManager.getTeamManager());
         KitSelectorMenu kitSelectorMenu = new KitSelectorMenu(gameManager.getKitManager());
 
-        plugin.getCommand("arenachest").setExecutor(new CommandArenaChest(plugin, gameManager.getArenaManager()));
-        plugin.getCommand("team").setExecutor(new CommandTeam(plugin, teamSelectorMenu, gameManager));
-        plugin.getCommand("kit").setExecutor(new CommandKit(plugin, kitSelectorMenu, gameManager));
-        plugin.getCommand("c").setExecutor(new CommandChat(plugin, gameManager.getTeamManager()));
-        plugin.getCommand("arena").setExecutor(new CommandArena(plugin, gameManager));
+        plugin.getCommand("arenachest").setExecutor(new CommandArenaChest());
+        plugin.getCommand("team").setExecutor(new CommandTeam(teamSelectorMenu));
+        plugin.getCommand("kit").setExecutor(new CommandKit(kitSelectorMenu));
+        plugin.getCommand("c").setExecutor(new CommandChat());
+        plugin.getCommand("arena").setExecutor(new CommandArena());
 
-        CommandAdmin adminCmd = new CommandAdmin(plugin, gameManager);
+        CommandAdmin adminCmd = new CommandAdmin();
         plugin.getCommand("admin").setExecutor(adminCmd);
         plugin.getCommand("admin").setTabCompleter(adminCmd);
 
-        plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest(plugin, gameManager));
-        plugin.getCommand("start").setExecutor(new CommandStart(plugin, gameManager));
-        plugin.getCommand("end").setExecutor(new CommandEnd(plugin, gameManager));
-        plugin.getCommand("reset").setExecutor(new CommandReset(plugin, gameManager));
+        plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest());
+        plugin.getCommand("start").setExecutor(new CommandStart());
+        plugin.getCommand("end").setExecutor(new CommandEnd());
+        plugin.getCommand("reset").setExecutor(new CommandReset());
 
-        pm.registerEvents(new TeamSelectorListener(gameManager, gameManager.getTeamManager(), teamSelectorMenu), plugin);
-        pm.registerEvents(new ArenaChestListener(plugin, gameManager.getArenaManager()), plugin);
-        pm.registerEvents(new KitSelectorListener(gameManager, gameManager.getKitManager(), kitSelectorMenu), plugin);
-        pm.registerEvents(new ChatListener(gameManager.getTeamManager()), plugin);
+        pm.registerEvents(new TeamSelectorListener(plugin, teamSelectorMenu), plugin);
+        pm.registerEvents(new ArenaChestListener(plugin), plugin);
+        pm.registerEvents(new KitSelectorListener(plugin, kitSelectorMenu), plugin);
+        pm.registerEvents(new ChatListener(plugin), plugin);
         pm.registerEvents(new PreGameListener(gameManager), plugin);
         pm.registerEvents(new PlayerTakeDamageListener(gameManager.getTeamManager()), plugin);
         pm.registerEvents(new EnchantmentTableListener(), plugin);
@@ -45,7 +46,7 @@ public class Registers {
         pm.registerEvents(new TeamChestListener(gameManager), plugin);
         pm.registerEvents(new DoorListener(gameManager, gameManager.getTeamManager()), plugin);
         pm.registerEvents(new VillagerRightClickListener(gameManager), plugin);
-        pm.registerEvents(new PlayerDeathListener(plugin, gameManager), plugin);
+        pm.registerEvents(new PlayerDeathListener(plugin), plugin);
         pm.registerEvents(new MinerKitListener(gameManager.getKitManager()), plugin);
     }
 
