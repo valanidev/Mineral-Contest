@@ -47,6 +47,7 @@ game:
     - 3
     - 2
     - 1
+  kit_selection_timer: 30
 
   max_players_per_team: 3
 

@@ -2,6 +2,7 @@ package dev.valani.mineralcontest.commands;
 
 import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.GameState;
+import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.menus.KitSelectorMenu;
 import org.bukkit.command.Command;
@@ -26,8 +27,13 @@ public class CommandKit implements CommandExecutor {
             sender.sendMessage(plugin.getString("plugin.only_player_command"));
             return false;
         }
-        if (!gameManager.isState(GameState.WAITING)) {
-            player.sendMessage("§cLa partie a déjà commencé.");
+        if (!gameManager.isState(GameState.KIT_SELECTION)) {
+            player.sendMessage("§cLe kit peut être choisi uniquement pendant la phase de sélection des kits.");
+            return false;
+        }
+        Team playerTeam = gameManager.getTeamManager().getPlayerTeam(player).orElse(null);
+        if (playerTeam == null) {
+            player.sendMessage("§cVous devez d'abord choisir une team.");
             return false;
         }
 

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class KitManager {
 
@@ -32,6 +33,12 @@ public class KitManager {
 
         playerKits.put(player.getUniqueId(), kit);
         kit.apply(player);
+    }
+
+    public KitBase assignRandomKit(Player player) {
+        KitBase kit = KITS.get(ThreadLocalRandom.current().nextInt(KITS.size()));
+        assignKit(player, kit);
+        return kit;
     }
 
     public void removeKit(Player player) {

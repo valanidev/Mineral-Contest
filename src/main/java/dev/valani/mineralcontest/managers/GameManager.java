@@ -4,6 +4,7 @@ import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.GameResult;
 import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.game.Team;
+import dev.valani.mineralcontest.game.kits.KitBase;
 import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -12,6 +13,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -38,6 +40,7 @@ public class GameManager {
     private BukkitTask gameEndTimer;
 
     private Map<Material, Integer> dropScores;
+    private final int kitSelectionTimer;
 
     private long endTimeMillis;
 
@@ -53,6 +56,7 @@ public class GameManager {
         this.scoreboardManager = new SbManager(plugin);
         this.alertTasks = new ArrayList<>();
         this.dropScores = new HashMap<>();
+        this.kitSelectionTimer = plugin.getInt("game.kit_selection_timer");
         loadDropScores();
         reset();
     }
@@ -121,8 +125,37 @@ public class GameManager {
             if (teamManager.getTeams().stream().noneMatch(t -> t.hasMember(player))) {
                 return GameResult.PLAYER_HAS_NO_TEAM;
             }
+        }
+
+        state = GameState.KIT_SELECTION;
+        Bukkit.broadcastMessage("§eChoisissez un kit ! Vous avez " + kitSelectionTimer + " secondes. §a/kit");
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+            player.performCommand("kit");
+        }
+
+        Bukkit.getScheduler().runTaskLater(plugin, this::startGameAfterKitSelection, kitSelectionTimer * 20L);
+        for (int i = kitSelectionTimer; i > 0; i--) {
+            int time = i;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (time <= 5) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 1.0f);
+                        player.sendTitle("", "§6Début dans §e" + time + " §6secondes", 10, 3 * 20, 10);
+                    }
+                }
+            }, (kitSelectionTimer - i) * 20L);
+        }
+
+        return GameResult.SUCCESS;
+    }
+
+    public GameResult startGameAfterKitSelection() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             if (!kitManager.hasKit(player)) {
-                return GameResult.PLAYER_HAS_NO_KIT;
+                KitBase kit = kitManager.assignRandomKit(player);
+                player.sendMessage("§cAucun kit choisi → kit aléatoire assigné: §e" + kit.getDisplayName());
+                Bukkit.broadcastMessage("§6§lKIT §a" + player.getDisplayName() + " §aa choisi le kit " + kit.getDisplayName() + "§a.");
             }
         }
 
@@ -251,11 +284,11 @@ public class GameManager {
     }
 
     public void reset() {
-        state = GameState.WAITING;                              // Reset game state to waiting
+        state = GameState.WAITING;
         cancelGameTimer();
         cancelAlertTasks();
-        dropManager.cancelDropTimer();                              // Cancel the drop timer
-        teamManager.clearAll();                             // Clear all teams
+        dropManager.cancelDropTimer();
+        teamManager.clearAll();
         kitManager.resetAll();
         scoreboardManager.resetAll();
         Bukkit.getOnlinePlayers().forEach(p -> {
@@ -266,6 +299,9 @@ public class GameManager {
             p.setGameMode(GameMode.SURVIVAL);
             p.setAllowFlight(false);
             p.setFlying(false);
+            for (PotionEffect pe : p.getActivePotionEffects()) {
+                p.removePotionEffect(pe.getType());
+            }
         });
 
         Bukkit.broadcastMessage("\n§6§lRESET " + plugin.getString("game.reset") + "\n ");

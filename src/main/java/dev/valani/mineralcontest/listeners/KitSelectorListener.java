@@ -37,8 +37,8 @@ public class KitSelectorListener implements Listener {
 
         if (event.getClickedInventory() != event.getView().getTopInventory()) return;
 
-        if (!gameManager.isState(GameState.WAITING)) {
-            player.sendMessage("§cTu ne peux pas changer de kit pendant la partie !");
+        if (!gameManager.isState(GameState.KIT_SELECTION)) {
+            player.sendMessage("§cTu ne peux pas changer de kit hors de la phase de choix du kit !");
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
