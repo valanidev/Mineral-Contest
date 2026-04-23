@@ -115,6 +115,7 @@ public class TeamChestListener implements Listener {
         teamInventory.clear();
 
         int score = scoreManager.calculateScore(drops);
+        Bukkit.getConsoleSender().sendMessage("§6INFO §e" + score + "§a points ajoutés pour l'équipe §r" + team.getDisplayName() + "§a: §r" + drops.toString());
         scoreManager.applyScore(team, score);
 
         player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 1.0f);

@@ -109,9 +109,20 @@ public class ArenaManager {
 
     public void scheduleAvailability() {
         cancelRecoveryTask();
+
         long minSeconds = plugin.getInt("arena.cooldown_min_seconds");
         long maxSeconds = plugin.getInt("arena.cooldown_max_seconds");
-        long delayTicks = ThreadLocalRandom.current().nextLong(minSeconds, maxSeconds + 1) * 20L;
+
+        long delaySeconds = ThreadLocalRandom.current().nextLong(minSeconds, maxSeconds + 1);
+        long delayTicks = delaySeconds * 20L;
+
+        if (delaySeconds > 5) {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                Bukkit.broadcastMessage("§eLe coffre d'arène apparaîtra dans §c5 secondes §e!");
+                Utils.playSoundForAll(Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 1.0f);
+            }, (delaySeconds - 5) * 20L);
+        }
+
         availabilityTask = Bukkit.getScheduler().runTaskLater(plugin, this::makeAvailable, delayTicks);
     }
 

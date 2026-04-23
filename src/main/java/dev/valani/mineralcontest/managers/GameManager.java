@@ -219,6 +219,8 @@ public class GameManager {
             }
         }
 
+        Utils.playSoundForAll(Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1.0f, 1.0f);
+
         Bukkit.broadcastMessage("\n§6§lSTART " + gameStartedStr + "\n ");
         return GameResult.SUCCESS;
     }

@@ -128,4 +128,8 @@ public class Utils {
         player.getInventory().setItem(0, sword);
         player.getInventory().setItem(8, food);
     }
+
+    public static void playSoundForAll(Sound sound, float volume, float pitch) {
+        Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), sound, volume, pitch));
+    }
 }
