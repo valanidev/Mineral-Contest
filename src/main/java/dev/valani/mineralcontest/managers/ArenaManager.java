@@ -116,6 +116,8 @@ public class ArenaManager {
         long delaySeconds = ThreadLocalRandom.current().nextLong(minSeconds, maxSeconds + 1);
         long delayTicks = delaySeconds * 20L;
 
+        Utils.consoleDebug("§eLe coffre d'arène apparaîtra dans §c" + delaySeconds + " secondes §e!");
+
         if (delaySeconds > 5) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 Bukkit.broadcastMessage("§eLe coffre d'arène apparaîtra dans §c5 secondes §e!");

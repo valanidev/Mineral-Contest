@@ -5,6 +5,7 @@ import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.managers.ScoreManager;
 import dev.valani.mineralcontest.managers.TeamManager;
+import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -115,7 +116,7 @@ public class TeamChestListener implements Listener {
         teamInventory.clear();
 
         int score = scoreManager.calculateScore(drops);
-        Bukkit.getConsoleSender().sendMessage("§6INFO §e" + score + "§a points ajoutés pour l'équipe §r" + team.getDisplayName() + "§a: §r" + drops.toString());
+        Utils.consoleDebug("§e" + score + "§a points ajoutés pour l'équipe §r" + team.getDisplayName() + "§a: §r" + drops.toString());
         scoreManager.applyScore(team, score);
 
         player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 1.0f);

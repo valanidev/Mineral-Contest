@@ -132,4 +132,8 @@ public class Utils {
     public static void playSoundForAll(Sound sound, float volume, float pitch) {
         Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), sound, volume, pitch));
     }
+
+    public static void consoleDebug(String message) {
+        Bukkit.getConsoleSender().sendMessage("§2§lDEBUG§r " + message);
+    }
 }
