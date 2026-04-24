@@ -12,18 +12,19 @@ import org.bukkit.entity.Player;
 
 public class CommandKit implements CommandExecutor {
 
-    private final Main plugin = Main.getInstance();
+    private final Main plugin;
     private final GameManager gameManager;
     private final KitSelectorMenu kitSelectorMenu;
 
-    public CommandKit(KitSelectorMenu kitSelectorMenu) {
+    public CommandKit(Main plugin, KitSelectorMenu kitSelectorMenu) {
+        this.plugin = plugin;
         this.kitSelectorMenu = kitSelectorMenu;
         this.gameManager = plugin.getGameManager();
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(plugin.getString("plugin.only_player_command"));
+            sender.sendMessage(plugin.getConfigManager().getString("plugin.only_player_command"));
             return false;
         }
         if (!gameManager.isState(GameState.KIT_SELECTION)) {

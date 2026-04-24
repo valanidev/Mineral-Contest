@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class GameManager {
 
-    private final Main plugin = Main.getInstance();
+    private final Main plugin;
     private GameState state;
 
     private final ArenaManager arenaManager;
@@ -33,7 +33,6 @@ public class GameManager {
     private final DoorManager doorManager;
     private final KitManager kitManager;
     private final ScoreManager scoreManager;
-    private final HealthDisplayManager healthDisplay;
     private final SbManager scoreboardManager;
 
     private final List<BukkitTask> alertTasks;
@@ -44,18 +43,18 @@ public class GameManager {
 
     private long endTimeMillis;
 
-    public GameManager() {
+    public GameManager(Main plugin, ConfigManager configManager) {
+        this.plugin = plugin;
         this.arenaManager = new ArenaManager(plugin, this);
         this.dropManager = new DropManager(plugin, this);
         this.teamManager = new TeamManager(plugin);
         this.doorManager = new DoorManager(this);
         this.kitManager = new KitManager(plugin);
         this.scoreManager = new ScoreManager(this);
-        this.healthDisplay = new HealthDisplayManager();
         this.scoreboardManager = new SbManager(plugin);
         this.alertTasks = new ArrayList<>();
         this.dropScores = new HashMap<>();
-        this.kitSelectionTimer = plugin.getInt("game.kit_selection_timer");
+        this.kitSelectionTimer = configManager.getInt("game.kit_selection_timer");
         loadDropScores();
         reset();
     }
@@ -128,7 +127,7 @@ public class GameManager {
 
         state = GameState.STARTED;
 
-        int durationSeconds = plugin.getInt("game.duration_seconds");
+        int durationSeconds = plugin.getConfigManager().getInt("game.duration_seconds");
         endTimeMillis = System.currentTimeMillis() + (durationSeconds * 1000L);
         gameEndTimer = Bukkit.getScheduler().runTaskLater(plugin, this::end, durationSeconds * 20L);
 
@@ -157,8 +156,7 @@ public class GameManager {
         }
 
 
-        healthDisplay.applyToAll();
-        String gameStartedStr = plugin.getString("game.started");
+        String gameStartedStr = plugin.getConfigManager().getString("game.started");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 1f);
@@ -204,10 +202,9 @@ public class GameManager {
         cancelGameTimer();
         cancelAlertTasks();
         dropManager.cancelDropTimer();
-        healthDisplay.removeFromAll();
         scoreboardManager.resetAll();
 
-        String gameEndedStr = plugin.getString("game.ended");
+        String gameEndedStr = plugin.getConfigManager().getString("game.ended");
         Bukkit.broadcastMessage("\n§6§lEND " + gameEndedStr + "\n ");
 
         List<Team> teams = teamManager.getTeams();
@@ -273,7 +270,7 @@ public class GameManager {
             }
         });
 
-        Bukkit.broadcastMessage("\n§6§lRESET " + plugin.getString("game.reset") + "\n ");
+        Bukkit.broadcastMessage("\n§6§lRESET " + plugin.getConfigManager().getString("game.reset") + "\n ");
     }
 
     private void cancelGameTimer() {
@@ -305,10 +302,6 @@ public class GameManager {
 
     public TeamManager getTeamManager() {
         return teamManager;
-    }
-
-    public HealthDisplayManager getHealthDisplay() {
-        return healthDisplay;
     }
 
     public DropManager getDropManager() {

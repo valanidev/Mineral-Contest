@@ -10,29 +10,27 @@ import org.bukkit.plugin.PluginManager;
 
 public class Registers {
 
-    private final Main plugin = Main.getInstance();
-
-    public Registers() {
+    public Registers(Main plugin) {
         PluginManager pm = Bukkit.getPluginManager();
         GameManager gameManager = plugin.getGameManager();
 
         TeamSelectorMenu teamSelectorMenu = new TeamSelectorMenu(gameManager.getTeamManager());
         KitSelectorMenu kitSelectorMenu = new KitSelectorMenu(gameManager.getKitManager());
 
-        plugin.getCommand("arenachest").setExecutor(new CommandArenaChest());
-        plugin.getCommand("team").setExecutor(new CommandTeam(teamSelectorMenu));
-        plugin.getCommand("kit").setExecutor(new CommandKit(kitSelectorMenu));
-        plugin.getCommand("c").setExecutor(new CommandChat());
-        plugin.getCommand("arena").setExecutor(new CommandArena());
+        plugin.getCommand("arenachest").setExecutor(new CommandArenaChest(plugin));
+        plugin.getCommand("team").setExecutor(new CommandTeam(plugin, teamSelectorMenu));
+        plugin.getCommand("kit").setExecutor(new CommandKit(plugin, kitSelectorMenu));
+        plugin.getCommand("c").setExecutor(new CommandChat(plugin));
+        plugin.getCommand("arena").setExecutor(new CommandArena(plugin));
 
-        CommandAdmin adminCmd = new CommandAdmin();
+        CommandAdmin adminCmd = new CommandAdmin(plugin);
         plugin.getCommand("admin").setExecutor(adminCmd);
         plugin.getCommand("admin").setTabCompleter(adminCmd);
 
-        plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest());
-        plugin.getCommand("start").setExecutor(new CommandStart());
-        plugin.getCommand("end").setExecutor(new CommandEnd());
-        plugin.getCommand("reset").setExecutor(new CommandReset());
+        plugin.getCommand("mineralcontest").setExecutor(new CommandMineralContest(plugin));
+        plugin.getCommand("start").setExecutor(new CommandStart(plugin));
+        plugin.getCommand("end").setExecutor(new CommandEnd(plugin));
+        plugin.getCommand("reset").setExecutor(new CommandReset(plugin));
 
         pm.registerEvents(new TeamSelectorListener(plugin, teamSelectorMenu), plugin);
         pm.registerEvents(new ArenaChestListener(plugin), plugin);

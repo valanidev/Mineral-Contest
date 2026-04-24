@@ -2,14 +2,11 @@ package dev.valani.mineralcontest.managers;
 
 import dev.valani.mineralcontest.game.Team;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class ScoreManager {

@@ -16,8 +16,6 @@ public class PlayerQuitListener implements Listener {
     @EventHandler
     public void onJoin(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        gameManager.getHealthDisplay().applyToPlayer(event.getPlayer());
-
         event.setQuitMessage("§a- " + player.getDisplayName() + " §aa quitté le serveur.");
     }
 }

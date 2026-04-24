@@ -77,7 +77,7 @@ public class ArenaChestListener implements Listener {
         if (!arenaManager.isChestAvailable()) {
             // Si un joueur est en train d'ouvrir le coffre on met un message custom, sinon il est indisponible
             String key = animatingPlayer != null ? "arena.chest_in_use" : "arena.chest_unavailable";
-            player.sendMessage(plugin.getString(key));
+            player.sendMessage(plugin.getConfigManager().getString(key));
             return;
         }
 
@@ -143,7 +143,7 @@ public class ArenaChestListener implements Listener {
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
         player.closeInventory();
         giveRewards(player);
-        Bukkit.broadcastMessage(plugin.getPrefix() + "Le coffre d'arène a été récupéré !");
+        Bukkit.broadcastMessage(plugin.getConfigManager().getPrefix() + "Le coffre d'arène a été récupéré !");
     }
 
     private void cancelAnimation() {

@@ -22,8 +22,8 @@ public class DropManager {
     }
 
     public void scheduleNextDrop() {
-        long minSeconds = plugin.getInt("drop.min_interval_seconds");
-        long maxSeconds = plugin.getInt("drop.max_interval_seconds");
+        long minSeconds = plugin.getConfigManager().getInt("drop.min_interval_seconds");
+        long maxSeconds = plugin.getConfigManager().getInt("drop.max_interval_seconds");
         long delayTicks = ThreadLocalRandom.current().nextLong(minSeconds, maxSeconds + 1) * 20L;
         dropTimer = Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!gameManager.isState(GameState.STARTED)) return;

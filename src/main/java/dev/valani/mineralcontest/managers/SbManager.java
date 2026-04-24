@@ -34,8 +34,15 @@ public class SbManager {
                 "§6§lMINERAL CONTEST",
                 RenderType.INTEGER
         );
-
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+        Objective health = board.registerNewObjective(
+                "health",
+                Criteria.HEALTH,
+                "§c❤",
+                RenderType.HEARTS
+        );
+        health.setDisplaySlot(DisplaySlot.BELOW_NAME);
 
         boards.put(player.getUniqueId(), board);
         player.setScoreboard(board);
@@ -43,8 +50,7 @@ public class SbManager {
 
     private void startUpdater() {
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-
-            GameManager gm = Main.getInstance().getGameManager();
+            GameManager gm = plugin.getGameManager();
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 update(player, gm);
@@ -54,24 +60,21 @@ public class SbManager {
     }
 
     public void update(Player player, GameManager gm) {
-
         Scoreboard board = boards.get(player.getUniqueId());
-
-        if (board == null) {
-            create(player);
-            board = boards.get(player.getUniqueId());
-        }
+        if (board == null) return;
 
         Objective obj = board.getObjective("mc");
         if (obj == null) return;
 
-        board.getEntries().forEach(board::resetScores);
+        board.getEntries().forEach(entry -> {
+            Score score = obj.getScore(entry);
+            if (score.isScoreSet()) board.resetScores(entry);
+        });
 
         Optional<Team> teamOpt = gm.getTeamManager().getPlayerTeam(player);
         String teamName = teamOpt
                 .map(Team::getDisplayName)
                 .orElse("Aucune");
-
         int score = teamOpt.map(Team::getScore).orElse(0);
 
         KitBase kit = gm.getKitManager().getKit(player);
@@ -89,8 +92,11 @@ public class SbManager {
     }
 
     public void remove(Player player) {
-        player.setScoreboard(Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard());
         boards.remove(player.getUniqueId());
+
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        if (manager == null) return;
+        player.setScoreboard(manager.getNewScoreboard());
     }
 
     public void resetAll() {

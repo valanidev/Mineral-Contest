@@ -14,21 +14,22 @@ import org.bukkit.entity.Player;
 
 public class CommandMineralContest implements CommandExecutor {
 
-    private final Main plugin = Main.getInstance();
+    private final Main plugin;
     private final GameManager gameManager;
 
-    public CommandMineralContest() {
+    public CommandMineralContest(Main plugin) {
+        this.plugin = plugin;
         this.gameManager = plugin.getGameManager();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(plugin.getString("plugin.only_player_command"));
+            sender.sendMessage(plugin.getConfigManager().getString("plugin.only_player_command"));
             return false;
         }
         if (args.length < 1) {
-            player.sendMessage(plugin.getString("plugin.not_enough_args"));
+            player.sendMessage(plugin.getConfigManager().getString("plugin.not_enough_args"));
             player.sendMessage("§cUsage: §e\n- kit \n- team");
             return false;
         }
@@ -44,7 +45,7 @@ public class CommandMineralContest implements CommandExecutor {
                 Drop drop = new Drop(plugin);
             }
             default -> {
-                player.sendMessage(plugin.getString("plugin.invalid_command"));
+                player.sendMessage(plugin.getConfigManager().getString("plugin.invalid_command"));
             }
         }
 

@@ -40,7 +40,7 @@ public class ArenaManager {
         int blockY = loc.getBlockY();
         int blockZ = loc.getBlockZ();
         Location chestLoc = new Location(loc.getWorld(), blockX, blockY, blockZ);
-        String materialName = plugin.getString("arena.chest_block");
+        String materialName = plugin.getConfigManager().getString("arena.chest_block");
         chestMaterial = Utils.parseMaterial(materialName);
 
         arenaFile.getConfig().set("chest.world", Objects.requireNonNull(chestLoc.getWorld()).getName());
@@ -91,7 +91,7 @@ public class ArenaManager {
             return;
         }
         chestAvailable = true;
-        Bukkit.broadcastMessage(plugin.getString("arena.chest_available"));
+        Bukkit.broadcastMessage(plugin.getConfigManager().getString("arena.chest_available"));
         Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1));
         startParticleTask();
     }
@@ -110,8 +110,8 @@ public class ArenaManager {
     public void scheduleAvailability() {
         cancelRecoveryTask();
 
-        long minSeconds = plugin.getInt("arena.cooldown_min_seconds");
-        long maxSeconds = plugin.getInt("arena.cooldown_max_seconds");
+        long minSeconds = plugin.getConfigManager().getInt("arena.cooldown_min_seconds");
+        long maxSeconds = plugin.getConfigManager().getInt("arena.cooldown_max_seconds");
 
         long delaySeconds = ThreadLocalRandom.current().nextLong(minSeconds, maxSeconds + 1);
         long delayTicks = delaySeconds * 20L;
@@ -173,7 +173,7 @@ public class ArenaManager {
     }
 
     private Material loadArenaChestMaterial() {
-        String name = plugin.getString("arena.chest_block");
+        String name = plugin.getConfigManager().getString("arena.chest_block");
         return Utils.parseMaterial(name);
     }
 }

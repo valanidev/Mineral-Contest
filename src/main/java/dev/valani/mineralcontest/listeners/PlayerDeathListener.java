@@ -64,7 +64,7 @@ public class PlayerDeathListener implements Listener {
 
         Team team = teamManager.getPlayerTeam(player).orElse(null);
         if (team == null) return;
-        Location spawnLoc = teamManager.getTeamChestLocation(team).clone().add(0.5, 1, 0.5);
+        Location spawnLoc = teamManager.getTeamSpawnLocation(team);
         event.setRespawnLocation(spawnLoc);
     }
 

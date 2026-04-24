@@ -13,21 +13,22 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class CommandChat implements CommandExecutor {
-    private final Main plugin = Main.getInstance();
+    private final Main plugin;
     private final TeamManager teamManager;
 
-    public CommandChat() {
+    public CommandChat(Main plugin) {
+        this.plugin = plugin;
         this.teamManager = plugin.getGameManager().getTeamManager();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(plugin.getString("plugin.only_player_command"));
+            sender.sendMessage(plugin.getConfigManager().getString("plugin.only_player_command"));
             return false;
         }
         if (args.length < 1) {
-            player.sendMessage(plugin.getString("plugin.not_enough_args"));
+            player.sendMessage(plugin.getConfigManager().getString("plugin.not_enough_args"));
             return false;
         }
 

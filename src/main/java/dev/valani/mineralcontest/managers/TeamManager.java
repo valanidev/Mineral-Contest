@@ -16,6 +16,7 @@ public class TeamManager {
     private final List<Team> teams;
     private final FileManager teamFile;
 
+    Map<Team, Location> teamSpawnLocations;
     Map<Team, Location> teamChestLocations;
     Map<Team, Location> teamArenaLocations;
 
@@ -25,7 +26,9 @@ public class TeamManager {
         this.teamFile = new FileManager(plugin, "team.yml");
         this.teamChestLocations = new HashMap<>();
         this.teamArenaLocations = new HashMap<>();
+        this.teamSpawnLocations = new HashMap<>();
 
+        loadTeamSpawns();
         loadTeamChests();
         loadTeamArenas();
     }
@@ -36,7 +39,7 @@ public class TeamManager {
 
     private List<Team> loadTeamsFromConfig() {
         List<Team> result = new ArrayList<>();
-        int maxPlayers = plugin.getInt("game.max_players_per_team");
+        int maxPlayers = plugin.getConfigManager().getInt("game.max_players_per_team");
 
         ConfigurationSection teamsSection = plugin.getConfig().getConfigurationSection("game.teams");
         if (teamsSection == null) return result;
@@ -79,6 +82,34 @@ public class TeamManager {
         }
     }
 
+    private void loadTeamSpawns() {
+        ConfigurationSection section = teamFile.getConfig().getConfigurationSection("team.spawn");
+        if (section == null) return;
+
+        for (String teamName : section.getKeys(false)) {
+            Team team = getTeams().stream()
+                    .filter(t -> t.getName().equalsIgnoreCase(teamName))
+                    .findFirst()
+                    .orElse(null);
+            if (team == null) continue;
+
+            String path = "team.spawn." + teamName;
+
+            String worldName = teamFile.getConfig().getString(path + ".world", "world");
+            World world = Bukkit.getWorld(worldName);
+            if (world == null) continue;
+
+            int x = teamFile.getConfig().getInt(path + ".x");
+            int y = teamFile.getConfig().getInt(path + ".y");
+            int z = teamFile.getConfig().getInt(path + ".z");
+            int yaw = teamFile.getConfig().getInt(path + ".yaw");
+            int pitch = teamFile.getConfig().getInt(path + ".pitch");
+
+            Location loc = new Location(world, x, y, z, yaw, pitch);
+            teamSpawnLocations.put(team, loc);
+        }
+    }
+
     private void loadTeamArenas() {
         ConfigurationSection section = teamFile.getConfig().getConfigurationSection("team.arena");
         if (section == null) return;
@@ -114,6 +145,8 @@ public class TeamManager {
 
         getPlayerTeam(player).ifPresent(t -> t.removeMember(player));
 
+        player.setDisplayName(team.getColor() + player.getName());
+        player.setPlayerListName(team.getColor() + player.getName());
         team.addMember(player);
         return GameResult.SUCCESS;
     }
@@ -158,6 +191,34 @@ public class TeamManager {
     public Location getTeamChestLocation(Team team) {
         if (team == null) return null;
         return teamChestLocations.get(team);
+    }
+
+    public void setTeamSpawn(Location loc, Team team) {
+        if (loc == null || team == null) return;
+        World world = loc.getWorld();
+        if (world == null) return;
+
+        String key = "team.spawn." + team.getName();
+        teamFile.getConfig().set(key + ".world", world.getName());
+        teamFile.getConfig().set(key + ".x", loc.getBlockX());
+        teamFile.getConfig().set(key + ".y", loc.getBlockY());
+        teamFile.getConfig().set(key + ".z", loc.getBlockZ());
+        teamFile.save();
+
+        teamSpawnLocations.put(team, loc);
+    }
+
+    public void removeTeamSpawn(Team team) {
+        String key = "team.spawn." + team.getName();
+        teamFile.getConfig().set(key, null);
+        teamFile.save();
+
+        teamSpawnLocations.remove(team);
+    }
+
+    public Location getTeamSpawnLocation(Team team) {
+        if (team == null) return null;
+        return teamSpawnLocations.get(team);
     }
 
     public boolean isTeamChest(Location loc) {

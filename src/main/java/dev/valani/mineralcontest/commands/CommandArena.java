@@ -17,12 +17,13 @@ import java.util.*;
 
 public class CommandArena implements CommandExecutor {
 
-    private final Main plugin = Main.getInstance();
+    private final Main plugin;
     private final GameManager gameManager;
 
     private final Set<UUID> teleporting;
 
-    public CommandArena() {
+    public CommandArena(Main plugin) {
+        this.plugin = plugin;
         this.gameManager = plugin.getGameManager();
         this.teleporting = new HashSet<>();
     }
@@ -30,7 +31,7 @@ public class CommandArena implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(plugin.getString("plugin.only_player_command"));
+            sender.sendMessage(plugin.getConfigManager().getString("plugin.only_player_command"));
             return false;
         }
 

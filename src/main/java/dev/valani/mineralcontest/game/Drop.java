@@ -53,11 +53,11 @@ public class Drop {
             fillChest(plugin, chest);
         }
 
-        String message = plugin.getString("drop.chest_placed")
+        String message = plugin.getConfigManager().getString("drop.chest_placed")
                 .replace("{X}", String.valueOf(targetLocation.getBlockX()))
                 .replace("{Y}", String.valueOf(targetLocation.getBlockY()))
                 .replace("{Z}", String.valueOf(targetLocation.getBlockZ()));
-        Bukkit.broadcastMessage(plugin.getPrefix() + message);
+        Bukkit.broadcastMessage(plugin.getConfigManager().getPrefix() + message);
     }
 
     private void fillChest(Main plugin, Chest chest) {

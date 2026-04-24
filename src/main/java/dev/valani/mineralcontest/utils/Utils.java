@@ -82,13 +82,13 @@ public class Utils {
         return String.format("%02d:%02d", minutes, sec);
     }
 
-    public static Team getTeam(Player player) {
-        return Main.getInstance()
-                .getGameManager()
-                .getTeamManager()
-                .getPlayerTeam(player)
-                .orElse(null);
-    }
+//    public static Team getTeam(Player player) {
+//        return Main.getInstance()
+//                .getGameManager()
+//                .getTeamManager()
+//                .getPlayerTeam(player)
+//                .orElse(null);
+//    }
 
     public static ItemStack buildHelmet(Team team) {
         ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
@@ -101,7 +101,9 @@ public class Utils {
     }
 
     public static ItemStack createTeamHelmet(Player player) {
-        Team team = Utils.getTeam(player);
+        // TODO: fix team getter
+//        Team team = Utils.getTeam(player);
+        Team team = null;
         if (team == null) return new ItemStack(Material.LEATHER_HELMET);
         return Utils.buildHelmet(team);
     }

@@ -9,10 +9,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 public class CommandReset implements CommandExecutor {
-    private final Main plugin = Main.getInstance();
+    private final Main plugin;
     private final GameManager gameManager;
 
-    public CommandReset() {
+    public CommandReset(Main plugin) {
+        this.plugin = plugin;
         this.gameManager = plugin.getGameManager();
     }
 

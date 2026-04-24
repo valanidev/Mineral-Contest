@@ -11,17 +11,18 @@ import org.bukkit.command.CommandSender;
 
 public class CommandStart implements CommandExecutor {
 
-    private final Main plugin = Main.getInstance();
+    private final Main plugin;
     private final GameManager gameManager;
 
-    public CommandStart() {
+    public CommandStart(Main plugin) {
+        this.plugin = plugin;
         this.gameManager = plugin.getGameManager();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!gameManager.isState(GameState.WAITING)) {
-            sender.sendMessage(plugin.getString("plugin.game_already_started"));
+            sender.sendMessage(plugin.getConfigManager().getString("plugin.game_already_started"));
             return false;
         }
 
