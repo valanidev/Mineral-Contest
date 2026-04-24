@@ -2,6 +2,7 @@ package dev.valani.mineralcontest.menus;
 
 import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.managers.TeamManager;
+import dev.valani.mineralcontest.utils.ItemBuilder;
 import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,7 +16,7 @@ import java.util.UUID;
 
 public class TeamSelectorMenu {
 
-    private static final String TITLE = "§8Choisir une équipe";
+    private static final String TITLE = "§8Choisis une équipe";
     private final TeamManager teamManager;
 
     public TeamSelectorMenu(TeamManager teamManager) {
@@ -24,7 +25,7 @@ public class TeamSelectorMenu {
 
     public void open(Player player) {
         List<Team> teams = teamManager.getTeams();
-        int size = Utils.roundToMultipleOf9(teams.size());
+        int size = Math.max(9, Utils.roundToMultipleOf9(teams.size()));
         Inventory inv = Bukkit.createInventory(null, size, TITLE);
 
         for (int i = 0; i < teams.size(); i++) {
@@ -35,10 +36,6 @@ public class TeamSelectorMenu {
     }
 
     private ItemStack buildTeamItem(Team team, Player player) {
-        ItemStack item = new ItemStack(team.getMaterial());
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) return item;
-
         List<String> lore = new ArrayList<>();
         lore.add("§7Joueurs : §f" + team.size() + "§7/§f" + team.getMaxPlayers());
         lore.add("");
@@ -47,9 +44,8 @@ public class TeamSelectorMenu {
             lore.add("§7Membres :");
             for (UUID uuid : members) {
                 Player p = Bukkit.getPlayer(uuid);
-                if (p == null) continue;
-                String name = p.getName();
-                lore.add(" §f" + name);
+                String name = p != null ? p.getName() : "§8(Déconnecté)";
+                lore.add(" " + name);
             }
             lore.add("");
         }
@@ -57,11 +53,10 @@ public class TeamSelectorMenu {
                 team.hasMember(player) ? "§a§lÉquipe actuelle" :
                 "§6Clique pour rejoindre");
 
-        meta.setDisplayName(team.getDisplayName());
-        meta.setLore(lore);
-
-        item.setItemMeta(meta);
-        return item;
+        return new ItemBuilder(team.getMaterial())
+                .setDisplayName(team.getDisplayName())
+                .setLore(lore)
+                .build();
     }
 
     public String getTitle() {

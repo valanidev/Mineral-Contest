@@ -1,7 +1,11 @@
-plugin:
+messages:
   prefix: '&2[&aMineral Contest&2] &r'
   enabled: '&ePlugin activé.'
   disabled: '&ePlugin désactivé.'
+
+  game:
+    already_started: "&cLa partie a déjà commencé."
+
   only_player_command: "&cSeul un joueur peut utiliser cette commande."
   not_enough_args: "&cCommande incomplète..."
   no_such_args: "&cArgument inconnu..."

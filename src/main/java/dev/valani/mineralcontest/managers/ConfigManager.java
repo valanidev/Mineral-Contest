@@ -12,7 +12,7 @@ public class ConfigManager {
     public ConfigManager(Main plugin) {
         this.plugin = plugin;
         this.prefix = ChatColor.translateAlternateColorCodes('&',
-                plugin.getConfig().getString("plugin.prefix", "[MineralContest] "));
+                plugin.getConfig().getString("messages.prefix", "[MineralContest] "));
     }
 
     public String getString(String key) {

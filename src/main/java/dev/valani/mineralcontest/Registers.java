@@ -16,15 +16,11 @@ public class Registers {
 
     public Registers(Main plugin, GameManager gameManager) {
         PluginManager pm = Bukkit.getPluginManager();
+
         registerCommand("c", plugin, new CommandChat(plugin, gameManager));
-
-//        plugin.getCommand("c").setExecutor(new CommandChat(plugin, gameManager.getTeamManager()));
-
-//        TeamSelectorMenu teamSelectorMenu = new TeamSelectorMenu(gameManager.getTeamManager());
-//        KitSelectorMenu kitSelectorMenu = new KitSelectorMenu(gameManager.getKitManager());
+        registerCommand("team", plugin, new CommandTeam(plugin, gameManager));
 //
 //        plugin.getCommand("arenachest").setExecutor(new CommandArenaChest(plugin));
-//        plugin.getCommand("team").setExecutor(new CommandTeam(plugin, teamSelectorMenu));
 //        plugin.getCommand("kit").setExecutor(new CommandKit(plugin, kitSelectorMenu));
 //        plugin.getCommand("arena").setExecutor(new CommandArena(plugin));
 //

@@ -1,33 +1,26 @@
 package dev.valani.mineralcontest.commands;
 
 import dev.valani.mineralcontest.Main;
-import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.menus.TeamSelectorMenu;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandTeam implements CommandExecutor {
+public class CommandTeam extends PlayerOnlyCommand {
 
-    private final Main plugin;
     private final GameManager gameManager;
     private final TeamSelectorMenu teamSelectorMenu;
 
-    public CommandTeam(Main plugin, TeamSelectorMenu teamSelectorMenu) {
-        this.plugin = plugin;
-        this.teamSelectorMenu = teamSelectorMenu;
-        this.gameManager = plugin.getGameManager();
+    public CommandTeam(Main plugin, GameManager gameManager) {
+        super(plugin);
+        this.gameManager = gameManager;
+        this.teamSelectorMenu = gameManager.getTeamSelectorMenu();
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(plugin.getConfigManager().getString("plugin.only_player_command"));
-            return false;
-        }
-        if (!gameManager.isState(GameState.WAITING)) {
-            player.sendMessage("§cLa partie a déjà commencé.");
+    @Override
+    protected boolean onPlayerCommand(Player player, Command cmd, String label, String[] args) {
+        if (!gameManager.isWaiting()) {
+            player.sendMessage(plugin.getConfigManager().getString("messages.game.already_started"));
             return false;
         }
 

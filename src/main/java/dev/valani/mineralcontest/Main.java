@@ -18,12 +18,12 @@ public class Main extends JavaPlugin {
         this.gameManager = new GameManager(this, configManager);
         new Registers(this, gameManager);
 
-        Bukkit.getConsoleSender().sendMessage(configManager.getStringWithPrefix("plugin.enabled"));
+        Bukkit.getConsoleSender().sendMessage(configManager.getStringWithPrefix("messages.enabled"));
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getConsoleSender().sendMessage(configManager.getStringWithPrefix("plugin.disabled"));
+        Bukkit.getConsoleSender().sendMessage(configManager.getStringWithPrefix("messages.disabled"));
     }
 
     public GameManager getGameManager() {

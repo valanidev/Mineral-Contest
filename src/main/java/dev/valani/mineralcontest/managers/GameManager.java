@@ -5,6 +5,8 @@ import dev.valani.mineralcontest.game.GameResult;
 import dev.valani.mineralcontest.game.GameState;
 import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.game.kits.KitBase;
+import dev.valani.mineralcontest.menus.KitSelectorMenu;
+import dev.valani.mineralcontest.menus.TeamSelectorMenu;
 import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,8 +45,21 @@ public class GameManager {
 
     private long endTimeMillis;
 
+    public KitSelectorMenu getKitSelectorMenu() {
+        return kitSelectorMenu;
+    }
+
+    public TeamSelectorMenu getTeamSelectorMenu() {
+        return teamSelectorMenu;
+    }
+
+    // MENUS
+    private final KitSelectorMenu kitSelectorMenu;
+    private final TeamSelectorMenu teamSelectorMenu;
+
     public GameManager(Main plugin, ConfigManager configManager) {
         this.plugin = plugin;
+
         this.arenaManager = new ArenaManager(plugin, this);
         this.dropManager = new DropManager(plugin, this);
         this.teamManager = new TeamManager(plugin);
@@ -55,6 +70,10 @@ public class GameManager {
         this.alertTasks = new ArrayList<>();
         this.dropScores = new HashMap<>();
         this.kitSelectionTimer = configManager.getInt("game.kit_selection_timer");
+
+        this.teamSelectorMenu = new TeamSelectorMenu(teamManager);
+        this.kitSelectorMenu = new KitSelectorMenu(kitManager);
+
         loadDropScores();
         reset();
     }
@@ -282,6 +301,10 @@ public class GameManager {
 
     public boolean isState(GameState s) {
         return state == s;
+    }
+
+    public boolean isWaiting() {
+        return isState(GameState.WAITING);
     }
 
     public DoorManager getDoorManager() {
