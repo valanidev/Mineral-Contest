@@ -157,6 +157,10 @@ public class TeamManager {
                 .findFirst();
     }
 
+    public Team getTeam(Player player) {
+        return getPlayerTeam(player).orElse(null);
+    }
+
     public List<Team> getTeams() {
         return teams;
     }

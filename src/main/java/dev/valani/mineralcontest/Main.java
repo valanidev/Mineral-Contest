@@ -16,7 +16,7 @@ public class Main extends JavaPlugin {
 
         this.configManager = new ConfigManager(this);
         this.gameManager = new GameManager(this, configManager);
-        new Registers(this);
+        new Registers(this, gameManager);
 
         Bukkit.getConsoleSender().sendMessage(configManager.getStringWithPrefix("plugin.enabled"));
     }

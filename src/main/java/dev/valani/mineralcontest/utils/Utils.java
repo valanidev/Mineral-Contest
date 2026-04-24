@@ -130,4 +130,8 @@ public class Utils {
     public static void consoleDebug(String message) {
         Bukkit.getConsoleSender().sendMessage("§1| §3DEBUG §b→ §r" + message);
     }
+
+    public static void consoleError(String message) {
+        Bukkit.getConsoleSender().sendMessage("§8| §4ERROR §c→ §4" + message);
+    }
 }
