@@ -2,9 +2,9 @@ package dev.valani.mineralcontest.game;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TeamDoor {
@@ -17,76 +17,84 @@ public class TeamDoor {
 
     private final Location center;
     private final DoorOrientation orientation;
-    private final Material concrete;
-    private final Material glass;
+    private final List<DoorBlock> doorBlocks;
     private boolean isOpen = false;
 
     public TeamDoor(Location center, DoorOrientation orientation, Material concrete, Material glass) {
-        // Correction : clone + arrondi manuel au lieu de toBlockLocation()
-        this.center = center.clone();
-        this.center.setX(center.getBlockX());
-        this.center.setY(center.getBlockY());
-        this.center.setZ(center.getBlockZ());
+        this.center = snapToBlock(center);
         this.orientation = orientation;
-        this.concrete = concrete;
-        this.glass = glass;
+        this.doorBlocks = buildDoorBlocks(concrete, glass);
     }
 
-    public List<DoorBlock> getDoorBlocks() {
-        List<DoorBlock> blocks = new ArrayList<>();
-        for (int row = -1; row <= 1; row++) {
-            for (int col = -1; col <= 1; col++) {
-                boolean isConcrete = PATTERN[row + 1][col + 1];
-                blocks.add(new DoorBlock(getBlock(row, col), isConcrete ? concrete : glass));
-            }
-        }
-        return blocks;
-    }
-
-    private Block getBlock(int row, int col) {
-        int x = center.getBlockX();
-        int y = center.getBlockY();
-        int z = center.getBlockZ();
-
-        // row = axe vertical (Y), col = axe horizontal selon l'orientation
-        return switch (orientation) {
-            case NORTH_SOUTH -> center.getWorld().getBlockAt(x + col, y + row, z);
-            case EAST_WEST -> center.getWorld().getBlockAt(x, y + row, z + col);
-        };
-    }
+    // --- Etat ---
 
     public void open() {
         if (isOpen) return;
         isOpen = true;
-        getDoorBlocks().forEach(db -> db.block().setType(Material.AIR));
+        doorBlocks.forEach(db -> db.block().setType(Material.AIR));
     }
 
     public void close() {
         if (!isOpen) return;
         isOpen = false;
-        getDoorBlocks().forEach(db -> db.block().setType(db.material()));
+        doorBlocks.forEach(db -> db.block().setType(db.material()));
     }
 
     public void place() {
         isOpen = false;
-        getDoorBlocks().forEach(db -> db.block().setType(db.material()));
+        doorBlocks.forEach(db -> db.block().setType(db.material()));
     }
 
+    public boolean contains(Block block) {
+        Location target = block.getLocation();
+        return doorBlocks.stream().anyMatch(db -> db.block().getLocation().equals(target));
+    }
+
+    // --- Getters ---
     public boolean isOpen() {
         return isOpen;
     }
 
     public Location getCenter() {
-        return center;
+        return center.clone();
     }
 
     public DoorOrientation getOrientation() {
         return orientation;
     }
 
-    public boolean contains(Block block) {
-        return getDoorBlocks().stream()
-                .anyMatch(db -> db.block().getLocation().equals(block.getLocation()));
+    public List<DoorBlock> getDoorBlocks() {
+        return doorBlocks;
+    }
+
+    // --- Calcul des blocs (une seule fois à la construction) ---
+    private List<DoorBlock> buildDoorBlocks(Material concrete, Material glass) {
+        var blocks = new java.util.ArrayList<DoorBlock>(9);
+        for (int row = -1; row <= 1; row++) {
+            for (int col = -1; col <= 1; col++) {
+                Material mat = PATTERN[row + 1][col + 1] ? concrete : glass;
+                blocks.add(new DoorBlock(resolveBlock(row, col), mat));
+            }
+        }
+        return List.copyOf(blocks);
+    }
+
+    private Block resolveBlock(int row, int col) {
+        int x = center.getBlockX(), y = center.getBlockY(), z = center.getBlockZ();
+        World world = center.getWorld();
+        if (world == null) return null;
+        return switch (orientation) {
+            case NORTH_SOUTH -> world.getBlockAt(x + col, y + row, z);
+            case EAST_WEST -> world.getBlockAt(x, y + row, z + col);
+        };
+    }
+
+    private static Location snapToBlock(Location loc) {
+        Location snapped = loc.clone();
+        snapped.setX(loc.getBlockX());
+        snapped.setY(loc.getBlockY());
+        snapped.setZ(loc.getBlockZ());
+        return snapped;
     }
 
     public record DoorBlock(Block block, Material material) {

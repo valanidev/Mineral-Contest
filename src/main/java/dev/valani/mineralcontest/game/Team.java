@@ -13,19 +13,53 @@ public class Team {
     private final String name;
     private final ChatColor color;
     private final Material material;
+    private final Material concrete;
+    private final Material glass;
     private final int maxPlayers;
-    private final List<UUID> members;
-    private int score;
+    private final List<UUID> members = new ArrayList<>();
+    private int score = 0;
 
     public Team(String name, ChatColor color, Material material, int maxPlayers) {
         this.name = name;
         this.color = color;
         this.material = material;
         this.maxPlayers = maxPlayers;
-        this.members = new ArrayList<>();
-        score = 0;
+        this.concrete = resolveConcrete(color);
+        this.glass = resolveGlass(color);
     }
 
+    // --- Membres ---
+    public boolean addMember(Player player) {
+        if (isFull() || hasMember(player)) return false;
+        return members.add(player.getUniqueId());
+    }
+
+    public boolean removeMember(Player player) {
+        return members.remove(player.getUniqueId());
+    }
+
+    public boolean hasMember(Player player) {
+        return members.contains(player.getUniqueId());
+    }
+
+    public boolean isFull() {
+        return members.size() >= maxPlayers;
+    }
+
+    public void clear() {
+        members.clear();
+    }
+
+    // --- Score ---
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void addScore(int amount) {
+        this.score += amount;
+    }
+
+    // --- Getters ---
     public String getName() {
         return name;
     }
@@ -38,6 +72,14 @@ public class Team {
         return material;
     }
 
+    public Material getConcrete() {
+        return concrete;
+    }
+
+    public Material getGlass() {
+        return glass;
+    }
+
     public int getMaxPlayers() {
         return maxPlayers;
     }
@@ -46,41 +88,12 @@ public class Team {
         return score;
     }
 
-    public void setScore(int score) {
-        this.score += score;
-    }
-
-    public void addScore(int score) {
-        this.score += score;
+    public int size() {
+        return members.size();
     }
 
     public List<UUID> getMembers() {
-        return members;
-    }
-
-    public boolean isFull() {
-        return members.size() >= maxPlayers;
-    }
-
-    public boolean hasMember(Player player) {
-        return members.contains(player.getUniqueId());
-    }
-
-    public boolean addMember(Player player) {
-        if (isFull() || hasMember(player)) return false;
-        return members.add(player.getUniqueId());
-    }
-
-    public boolean removeMember(Player player) {
-        return members.remove(player.getUniqueId());
-    }
-
-    public void clear() {
-        members.clear();
-    }
-
-    public int size() {
-        return members.size();
+        return List.copyOf(members);
     }
 
     public String getDisplayName() {
@@ -89,6 +102,33 @@ public class Team {
 
     @Override
     public String toString() {
-        return getDisplayName() + " (" + size() + "/" + getMaxPlayers() + ")";
+        return getDisplayName() + " (" + size() + "/" + maxPlayers + ")";
+    }
+
+    // --- Résolution des matériaux de porte ---
+    private static Material resolveConcrete(ChatColor color) {
+        return switch (color) {
+            case RED -> Material.RED_CONCRETE;
+            case BLUE -> Material.BLUE_CONCRETE;
+            case GREEN -> Material.GREEN_CONCRETE;
+            case YELLOW -> Material.YELLOW_CONCRETE;
+            case AQUA -> Material.CYAN_CONCRETE;
+            case LIGHT_PURPLE -> Material.PINK_CONCRETE;
+            case BLACK -> Material.BLACK_CONCRETE;
+            default -> Material.WHITE_CONCRETE;
+        };
+    }
+
+    private static Material resolveGlass(ChatColor color) {
+        return switch (color) {
+            case RED -> Material.RED_STAINED_GLASS;
+            case BLUE -> Material.BLUE_STAINED_GLASS;
+            case GREEN -> Material.GREEN_STAINED_GLASS;
+            case YELLOW -> Material.YELLOW_STAINED_GLASS;
+            case AQUA -> Material.CYAN_STAINED_GLASS;
+            case LIGHT_PURPLE -> Material.PINK_STAINED_GLASS;
+            case BLACK -> Material.BLACK_STAINED_GLASS;
+            default -> Material.WHITE_STAINED_GLASS;
+        };
     }
 }

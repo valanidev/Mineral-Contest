@@ -1,13 +1,12 @@
 package dev.valani.mineralcontest.managers;
 
-import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.game.DoorOrientation;
 import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.game.TeamDoor;
 import dev.valani.mineralcontest.utils.FileManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -22,42 +21,9 @@ public class DoorManager {
         loadDoors(gameManager.getTeamManager().getTeams());
     }
 
-    private Material getConcrete(Team team) {
-        return switch (team.getColor()) {
-            case RED -> Material.RED_CONCRETE;
-            case BLUE -> Material.BLUE_CONCRETE;
-            case GREEN -> Material.GREEN_CONCRETE;
-            case YELLOW -> Material.YELLOW_CONCRETE;
-            case AQUA -> Material.CYAN_CONCRETE;
-            case LIGHT_PURPLE -> Material.PINK_CONCRETE;
-            case WHITE -> Material.WHITE_CONCRETE;
-            case BLACK -> Material.BLACK_CONCRETE;
-            default -> Material.WHITE_CONCRETE;
-        };
-    }
-
-    private Material getGlass(Team team) {
-        return switch (team.getColor()) {
-            case RED -> Material.RED_STAINED_GLASS;
-            case BLUE -> Material.BLUE_STAINED_GLASS;
-            case GREEN -> Material.GREEN_STAINED_GLASS;
-            case YELLOW -> Material.YELLOW_STAINED_GLASS;
-            case AQUA -> Material.CYAN_STAINED_GLASS;
-            case LIGHT_PURPLE -> Material.PINK_STAINED_GLASS;
-            case WHITE -> Material.WHITE_STAINED_GLASS;
-            case BLACK -> Material.BLACK_STAINED_GLASS;
-            default -> Material.WHITE_STAINED_GLASS;
-        };
-    }
-
     public void setDoor(Team team, Location center, DoorOrientation orientation) {
         removeDoor(team);
-        TeamDoor door = new TeamDoor(
-                center,
-                orientation,
-                getConcrete(team),
-                getGlass(team)
-        );
+        TeamDoor door = new TeamDoor(center, orientation, team.getConcrete(), team.getGlass());
         door.place();
         doors.put(team, door);
         saveDoor(team, center, orientation);
@@ -67,8 +33,45 @@ public class DoorManager {
         TeamDoor door = doors.remove(team);
         if (door != null) {
             door.close();
-            deleteDoorFromFile(team);
+            teamFile.getConfig().set("door." + team.getName(), null);
+            teamFile.save();
         }
+    }
+
+    public void placeAllDoors(World world) {
+        doors.forEach((team, door) -> {
+            Location old = door.getCenter();
+            Location newCenter = new Location(world, old.getBlockX(), old.getBlockY(), old.getBlockZ());
+            TeamDoor newDoor = new TeamDoor(newCenter, door.getOrientation(), team.getConcrete(), team.getGlass());
+            newDoor.place();
+            doors.put(team, newDoor);
+        });
+    }
+
+    public void onPlayerMove(Player player, Team playerTeam) {
+        doors.forEach((team, door) -> {
+            Location center = door.getCenter();
+            if (center.getWorld() == null || !center.isWorldLoaded()) return;
+            if (!player.getWorld().equals(center.getWorld())) return;
+
+            double distance = player.getLocation().distance(center);
+
+            if (team.equals(playerTeam) && distance <= 3.5) {
+                door.open();
+            } else if (door.isOpen() && !anyMemberNearby(team, door)) {
+                door.close();
+            }
+        });
+    }
+
+    private boolean anyMemberNearby(Team team, TeamDoor door) {
+        Location center = door.getCenter();
+        if (center.getWorld() == null || !center.isWorldLoaded()) return false;
+
+        return team.getMembers().stream()
+                .map(Bukkit::getPlayer)
+                .filter(p -> p != null && p.isOnline() && p.getWorld().equals(center.getWorld()))
+                .anyMatch(p -> p.getLocation().distance(center) <= 3.5);
     }
 
     public Optional<TeamDoor> getDoor(Team team) {
@@ -79,27 +82,8 @@ public class DoorManager {
         return Collections.unmodifiableMap(doors);
     }
 
-    public void onPlayerMove(Player player, Team playerTeam) {
-        doors.forEach((team, door) -> {
-            double distance = player.getLocation().distance(door.getCenter());
-
-            if (team.equals(playerTeam) && distance <= 3.5) {
-                door.open();
-            } else if (door.isOpen() && !anyTeamMemberNearby(team, door)) {
-                door.close();
-            }
-        });
-    }
-
-    private boolean anyTeamMemberNearby(Team team, TeamDoor door) {
-        return team.getMembers().stream()
-                .map(Bukkit::getPlayer)
-                .filter(p -> p != null && p.isOnline())
-                .anyMatch(p -> p.getLocation().distance(door.getCenter()) <= 2.0);
-    }
-
     private void saveDoor(Team team, Location center, DoorOrientation orientation) {
-        String path = "team.door." + team.getName();
+        String path = "door." + team.getName();
         teamFile.getConfig().set(path + ".world", center.getWorld().getName());
         teamFile.getConfig().set(path + ".x", center.getBlockX());
         teamFile.getConfig().set(path + ".y", center.getBlockY());
@@ -108,14 +92,9 @@ public class DoorManager {
         teamFile.save();
     }
 
-    private void deleteDoorFromFile(Team team) {
-        teamFile.getConfig().set("doors." + team.getName(), null);
-        teamFile.save();
-    }
-
-    public void loadDoors(List<Team> teams) {
+    private void loadDoors(List<Team> teams) {
         for (Team team : teams) {
-            String path = "team.door." + team.getName();
+            String path = "door." + team.getName();
             if (!teamFile.getConfig().contains(path)) continue;
 
             String worldName = teamFile.getConfig().getString(path + ".world");
@@ -124,8 +103,12 @@ public class DoorManager {
             int z = teamFile.getConfig().getInt(path + ".z");
             String orientation = teamFile.getConfig().getString(path + ".orientation", "NORTH_SOUTH");
 
-            Location center = new Location(Bukkit.getWorld(worldName), x, y, z);
-            setDoor(team, center, DoorOrientation.valueOf(orientation));
+            // Stocke en mémoire sans appeler place() — monde peut ne pas exister encore
+            World world = worldName != null ? Bukkit.getWorld(worldName) : null;
+            Location center = new Location(world, x, y, z);
+            TeamDoor door = new TeamDoor(center, DoorOrientation.valueOf(orientation),
+                    team.getConcrete(), team.getGlass());
+            doors.put(team, door);
         }
     }
 }

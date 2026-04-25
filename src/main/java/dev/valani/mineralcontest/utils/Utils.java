@@ -42,20 +42,13 @@ public class Utils {
         return switch (chatColor) {
             case AQUA -> Color.AQUA;
             case BLACK -> Color.BLACK;
-            case BLUE -> Color.BLUE;
-            case DARK_AQUA -> Color.BLUE;
-            case DARK_BLUE -> Color.BLUE;
-            case DARK_GRAY -> Color.GRAY;
-            case DARK_GREEN -> Color.GREEN;
-            case DARK_PURPLE -> Color.PURPLE;
-            case DARK_RED -> Color.RED;
-            case GOLD -> Color.YELLOW;
-            case GRAY -> Color.GRAY;
-            case GREEN -> Color.GREEN;
-            case LIGHT_PURPLE -> Color.PURPLE;
-            case RED -> Color.RED;
+            case BLUE, DARK_AQUA, DARK_BLUE -> Color.BLUE;
+            case DARK_GRAY, GRAY -> Color.GRAY;
+            case DARK_GREEN, GREEN -> Color.GREEN;
+            case DARK_PURPLE, LIGHT_PURPLE -> Color.PURPLE;
+            case DARK_RED, RED -> Color.RED;
+            case GOLD, YELLOW -> Color.YELLOW;
             case WHITE -> Color.WHITE;
-            case YELLOW -> Color.YELLOW;
             default -> null;
         };
     }

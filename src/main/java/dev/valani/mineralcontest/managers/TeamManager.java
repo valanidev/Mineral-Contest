@@ -1,271 +1,142 @@
 package dev.valani.mineralcontest.managers;
 
 import dev.valani.mineralcontest.Main;
-import dev.valani.mineralcontest.game.GameResult;
 import dev.valani.mineralcontest.game.Team;
 import dev.valani.mineralcontest.utils.FileManager;
 import dev.valani.mineralcontest.utils.Utils;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class TeamManager {
+
     private final Main plugin;
     private final List<Team> teams;
     private final FileManager teamFile;
-
-    Map<Team, Location> teamSpawnLocations;
-    Map<Team, Location> teamChestLocations;
-    Map<Team, Location> teamArenaLocations;
+    private final TeamLocationStore locationStore;
 
     public TeamManager(Main plugin) {
         this.plugin = plugin;
+        this.teamFile = new FileManager(plugin, "teams.yml");
         this.teams = loadTeamsFromConfig();
-        this.teamFile = new FileManager(plugin, "team.yml");
-        this.teamChestLocations = new HashMap<>();
-        this.teamArenaLocations = new HashMap<>();
-        this.teamSpawnLocations = new HashMap<>();
-
-        loadTeamSpawns();
-        loadTeamChests();
-        loadTeamArenas();
+        this.locationStore = new TeamLocationStore(teamFile, teams);
     }
 
-    public FileManager getTeamFile() {
-        return teamFile;
-    }
+    // --- Config ---
 
     private List<Team> loadTeamsFromConfig() {
         List<Team> result = new ArrayList<>();
         int maxPlayers = plugin.getConfigManager().getInt("game.max_players_per_team");
 
-        ConfigurationSection teamsSection = plugin.getConfig().getConfigurationSection("game.teams");
-        if (teamsSection == null) return result;
+        ConfigurationSection section = plugin.getConfig().getConfigurationSection("game.teams");
+        if (section == null) return result;
 
-        for (String key : teamsSection.getKeys(false)) {
+        for (String key : section.getKeys(false)) {
             String path = "game.teams." + key;
             String name = plugin.getConfig().getString(path + ".name", key);
             ChatColor color = Utils.parseChatColor(plugin.getConfig().getString(path + ".color", "WHITE"));
-            Material material = Utils.parseMaterial(plugin.getConfig().getString(path + ".icon", "WHITE_WOOL"));
-            result.add(new Team(name, color, material, maxPlayers));
+            Material mat = Utils.parseMaterial(plugin.getConfig().getString(path + ".icon", "WHITE_WOOL"));
+            result.add(new Team(name, color, mat, maxPlayers));
         }
 
         return result;
     }
 
-    private void loadTeamChests() {
-        ConfigurationSection section = teamFile.getConfig().getConfigurationSection("team.chest");
-        if (section == null) return;
+    // --- Membres ---
 
-        for (String teamName : section.getKeys(false)) {
-            Team team = getTeams().stream()
-                    .filter(t -> t.getName().equalsIgnoreCase(teamName))
-                    .findFirst()
-                    .orElse(null);
-
-            if (team == null) continue;
-
-            String path = "team.chest." + teamName;
-
-            String worldName = teamFile.getConfig().getString(path + ".world", "world");
-            World world = Bukkit.getWorld(worldName);
-            if (world == null) continue;
-
-            int x = teamFile.getConfig().getInt(path + ".x");
-            int y = teamFile.getConfig().getInt(path + ".y");
-            int z = teamFile.getConfig().getInt(path + ".z");
-
-            Location loc = new Location(world, x, y, z);
-            teamChestLocations.put(team, loc);
-        }
-    }
-
-    private void loadTeamSpawns() {
-        ConfigurationSection section = teamFile.getConfig().getConfigurationSection("team.spawn");
-        if (section == null) return;
-
-        for (String teamName : section.getKeys(false)) {
-            Team team = getTeams().stream()
-                    .filter(t -> t.getName().equalsIgnoreCase(teamName))
-                    .findFirst()
-                    .orElse(null);
-            if (team == null) continue;
-
-            String path = "team.spawn." + teamName;
-
-            String worldName = teamFile.getConfig().getString(path + ".world", "world");
-            World world = Bukkit.getWorld(worldName);
-            if (world == null) continue;
-
-            int x = teamFile.getConfig().getInt(path + ".x");
-            int y = teamFile.getConfig().getInt(path + ".y");
-            int z = teamFile.getConfig().getInt(path + ".z");
-            int yaw = teamFile.getConfig().getInt(path + ".yaw");
-            int pitch = teamFile.getConfig().getInt(path + ".pitch");
-
-            Location loc = new Location(world, x, y, z, yaw, pitch);
-            teamSpawnLocations.put(team, loc);
-        }
-    }
-
-    private void loadTeamArenas() {
-        ConfigurationSection section = teamFile.getConfig().getConfigurationSection("team.arena");
-        if (section == null) return;
-
-        for (String teamName : section.getKeys(false)) {
-            Team team = getTeams().stream()
-                    .filter(t -> t.getName().equalsIgnoreCase(teamName))
-                    .findFirst()
-                    .orElse(null);
-
-            if (team == null) continue;
-
-            String path = "team.arena." + teamName;
-
-            String worldName = teamFile.getConfig().getString(path + ".world", "world");
-            World world = Bukkit.getWorld(worldName);
-            if (world == null) continue;
-
-            int x = teamFile.getConfig().getInt(path + ".x");
-            int y = teamFile.getConfig().getInt(path + ".y");
-            int z = teamFile.getConfig().getInt(path + ".z");
-            int yaw = teamFile.getConfig().getInt(path + ".yaw");
-            int pitch = teamFile.getConfig().getInt(path + ".pitch");
-
-            Location loc = new Location(world, x, y, z, yaw, pitch);
-            teamArenaLocations.put(team, loc);
-        }
-    }
-
-    public GameResult joinTeam(Player player, Team team) {
-        if (team.hasMember(player)) return GameResult.ALREADY_IN_TEAM;
-        if (team.isFull()) return GameResult.TEAM_FULL;
-
+    public void joinTeam(Player player, Team team) {
+        if (team.hasMember(player) || team.isFull()) return;
         getPlayerTeam(player).ifPresent(t -> t.removeMember(player));
-
         player.setDisplayName(team.getColor() + player.getName());
         player.setPlayerListName(team.getColor() + player.getName());
         team.addMember(player);
-        return GameResult.SUCCESS;
     }
 
     public Optional<Team> getPlayerTeam(Player player) {
-        return teams.stream()
-                .filter(t -> t.hasMember(player))
-                .findFirst();
+        return teams.stream().filter(t -> t.hasMember(player)).findFirst();
     }
 
     public Team getTeam(Player player) {
         return getPlayerTeam(player).orElse(null);
     }
 
-    public List<Team> getTeams() {
-        return teams;
-    }
-
     public void clearAll() {
         teams.forEach(Team::clear);
     }
 
-    public void setTeamChest(Location loc, Team team) {
-        if (loc == null || team == null) return;
-        World world = loc.getWorld();
-        if (world == null) return;
-
-        String key = "team.chest." + team.getName();
-        teamFile.getConfig().set(key + ".world", world.getName());
-        teamFile.getConfig().set(key + ".x", loc.getBlockX());
-        teamFile.getConfig().set(key + ".y", loc.getBlockY());
-        teamFile.getConfig().set(key + ".z", loc.getBlockZ());
-        teamFile.save();
-
-        teamChestLocations.put(team, loc);
-    }
-
-    public void removeTeamChest(Team team) {
-        String key = "team.chest." + team.getName();
-        teamFile.getConfig().set(key, null);
-        teamFile.save();
-
-        teamChestLocations.remove(team);
-    }
+    // --- Locations (délégué à TeamLocationStore) ---
 
     public Location getTeamChestLocation(Team team) {
-        if (team == null) return null;
-        return teamChestLocations.get(team);
-    }
-
-    public void setTeamSpawn(Location loc, Team team) {
-        if (loc == null || team == null) return;
-        World world = loc.getWorld();
-        if (world == null) return;
-
-        String key = "team.spawn." + team.getName();
-        teamFile.getConfig().set(key + ".world", world.getName());
-        teamFile.getConfig().set(key + ".x", loc.getBlockX());
-        teamFile.getConfig().set(key + ".y", loc.getBlockY());
-        teamFile.getConfig().set(key + ".z", loc.getBlockZ());
-        teamFile.save();
-
-        teamSpawnLocations.put(team, loc);
-    }
-
-    public void removeTeamSpawn(Team team) {
-        String key = "team.spawn." + team.getName();
-        teamFile.getConfig().set(key, null);
-        teamFile.save();
-
-        teamSpawnLocations.remove(team);
+        return locationStore.get(team, TeamLocationStore.LocationType.CHEST);
     }
 
     public Location getTeamSpawnLocation(Team team) {
-        if (team == null) return null;
-        return teamSpawnLocations.get(team);
+        return locationStore.get(team, TeamLocationStore.LocationType.SPAWN);
+    }
+
+    public Location getTeamArenaLocation(Team team) {
+        return locationStore.get(team, TeamLocationStore.LocationType.ARENA);
+    }
+
+    public void setTeamChest(Location loc, Team team) {
+        locationStore.set(team, TeamLocationStore.LocationType.CHEST, loc);
+    }
+
+    public void setTeamSpawn(Location loc, Team team) {
+        locationStore.set(team, TeamLocationStore.LocationType.SPAWN, loc);
+    }
+
+    public void setTeamArena(Location loc, Team team) {
+        locationStore.set(team, TeamLocationStore.LocationType.ARENA, loc);
+    }
+
+    public void removeTeamChest(Team team) {
+        locationStore.remove(team, TeamLocationStore.LocationType.CHEST);
+    }
+
+    public void removeTeamSpawn(Team team) {
+        locationStore.remove(team, TeamLocationStore.LocationType.SPAWN);
+    }
+
+    public void removeTeamArena(Team team) {
+        locationStore.remove(team, TeamLocationStore.LocationType.ARENA);
     }
 
     public boolean isTeamChest(Location loc) {
-        return teamChestLocations.containsValue(loc);
+        return teams.stream()
+                .map(team -> locationStore.get(team, TeamLocationStore.LocationType.CHEST))
+                .filter(Objects::nonNull)
+                .anyMatch(chestLoc ->
+                        chestLoc.getBlockX() == loc.getBlockX() &&
+                                chestLoc.getBlockY() == loc.getBlockY() &&
+                                chestLoc.getBlockZ() == loc.getBlockZ() &&
+                                Objects.equals(chestLoc.getWorld(), loc.getWorld())
+                );
+    }
+
+    // --- Getters ---
+
+    public List<Team> getTeams() {
+        return List.copyOf(teams);
+    }
+
+    public FileManager getTeamFile() {
+        return teamFile;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder("§r§nTeams§7: §r");
-        teams.forEach(
-                team -> builder
-                        .append(team.toString())
-                        .append("§r, "));
-        builder.delete(builder.length() - 2, builder.length());
-        return builder.toString();
-    }
-
-    public void setTeamArena(Location loc, Team team) {
-        if (loc == null || team == null) return;
-        World world = loc.getWorld();
-        if (world == null) return;
-
-        String key = "team.arena." + team.getName();
-        teamFile.getConfig().set(key + ".world", world.getName());
-        teamFile.getConfig().set(key + ".x", loc.getBlockX());
-        teamFile.getConfig().set(key + ".y", loc.getBlockY());
-        teamFile.getConfig().set(key + ".z", loc.getBlockZ());
-        teamFile.getConfig().set(key + ".yaw", loc.getYaw());
-        teamFile.getConfig().set(key + ".pitch", loc.getPitch());
-        teamFile.save();
-
-        teamArenaLocations.put(team, loc);
-    }
-
-    public void removeTeamArena(Team team) {
-        String key = "team.arena." + team.getName();
-        teamFile.getConfig().set(key, null);
-        teamFile.save();
-        teamArenaLocations.remove(team);
-    }
-
-    public Location getTeamArenaLocation(Team team) {
-        if (team == null) return null;
-        return teamArenaLocations.get(team);
+        return teams.stream()
+                .map(Team::toString)
+                .reduce((a, b) -> a + "§r, " + b)
+                .map(s -> "§r§nTeams§7: §r" + s)
+                .orElse("Aucune équipe");
     }
 }

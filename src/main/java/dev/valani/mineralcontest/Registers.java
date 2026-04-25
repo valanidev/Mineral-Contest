@@ -15,23 +15,26 @@ import org.bukkit.plugin.PluginManager;
 
 public class Registers {
 
+    private final Main plugin;
+
     public Registers(Main plugin, GameManager gameManager) {
+        this.plugin = plugin;
         PluginManager pm = Bukkit.getPluginManager();
 
-        SchematicManager schematicManager = new SchematicManager(plugin);
-        plugin.saveResource("arena.schem", false);
-        registerCommand("generate", plugin, new CommandGenerate(plugin, schematicManager));
+//        SchematicManager schematicManager = new SchematicManager(plugin);
+//        plugin.saveResource("arena.schem", false);
+//        registerCommand("generate", plugin, new CommandGenerate(plugin, schematicManager));
 
-        registerCommand("c", plugin, new CommandChat(plugin, gameManager));
-        registerCommand("team", plugin, new CommandTeam(plugin, gameManager));
-        registerCommand("kit", plugin, new CommandKit(plugin, gameManager));
-        registerCommand("arena", plugin, new CommandArena(plugin));
-        registerCommand("arenachest", plugin, new CommandArenaChest(plugin));
-        registerCommand("admin", plugin, new CommandAdmin(plugin));
-        registerCommand("mineralcontest", plugin, new CommandMineralContest(plugin));
-        registerCommand("start", plugin, new CommandStart(plugin));
-        registerCommand("end", plugin, new CommandEnd(plugin));
-        registerCommand("reset", plugin, new CommandReset(plugin));
+        registerCommand("team", new CommandTeam(plugin, gameManager));
+        registerCommand("c", new CommandChat(plugin, gameManager));
+        registerCommand("kit", new CommandKit(plugin, gameManager));
+        registerCommand("arena", new CommandArena(plugin));
+        registerCommand("arenachest", new CommandArenaChest(plugin));
+        registerCommand("admin", new CommandAdmin(plugin));
+        registerCommand("mineralcontest", new CommandMineralContest(plugin));
+        registerCommand("start", new CommandStart(plugin));
+        registerCommand("end", new CommandEnd(plugin));
+        registerCommand("reset", new CommandReset(plugin));
 
         pm.registerEvents(new TeamSelectorListener(plugin, gameManager), plugin);
         pm.registerEvents(new ArenaChestListener(plugin), plugin);
@@ -49,7 +52,7 @@ public class Registers {
         pm.registerEvents(new MinerKitListener(gameManager.getKitManager()), plugin);
     }
 
-    private void registerCommand(String name, Main plugin, Object executor) {
+    private void registerCommand(String name, Object executor) {
         PluginCommand cmd = plugin.getCommand(name);
         if (cmd == null) {
             Utils.consoleError("Command /" + name + " not found in plugin.yml");

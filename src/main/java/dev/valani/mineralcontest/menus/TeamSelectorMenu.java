@@ -44,7 +44,7 @@ public class TeamSelectorMenu {
             lore.add("§7Membres :");
             for (UUID uuid : members) {
                 Player p = Bukkit.getPlayer(uuid);
-                String name = p != null ? p.getName() : "§8(Déconnecté)";
+                String name = p != null ? p.getDisplayName() : "§8(Déconnecté)";
                 lore.add(" " + name);
             }
             lore.add("");

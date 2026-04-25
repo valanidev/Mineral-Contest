@@ -49,22 +49,22 @@ public class TeamSelectorListener implements Listener {
         if (slot >= teams.size()) return;
 
         Team team = teams.get(slot);
-        GameResult result = teamManager.joinTeam(player, team);
 
-        switch (result) {
-            case SUCCESS -> {
-                Bukkit.broadcastMessage("§6§lTEAM §a" + player.getDisplayName() + " §aa rejoint la team " + team.getDisplayName() + "§a.");
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
-            }
-            case TEAM_FULL -> {
-                player.sendMessage("§cCette équipe est pleine !");
-                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-            }
-            case ALREADY_IN_TEAM -> {
-                player.sendMessage("§cTu fais déjà partie de cette équipe.");
-                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-            }
+        if (team.isFull()) {
+            player.sendMessage("§cCette équipe est pleine !");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            return;
         }
+
+        if (team.hasMember(player)) {
+            player.sendMessage("§cTu fais déjà partie de cette équipe.");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            return;
+        }
+
+        teamManager.joinTeam(player, team);
+        Bukkit.broadcastMessage("§6§lTEAM §a" + player.getDisplayName() + " §aa rejoint la team " + team.getDisplayName() + "§a.");
+        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
 
         menu.open(player);
     }

@@ -32,7 +32,7 @@ public class DoorListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         if (!hasMoved(event)) return;
 
-        if (!gameManager.isState(GameState.STARTED)) return;
+//        if (!gameManager.isState(GameState.STARTED)) return;
 
         Player player = event.getPlayer();
         Team playerTeam = teamManager.getPlayerTeam(player).orElse(null);
