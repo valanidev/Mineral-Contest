@@ -9,7 +9,6 @@ import dev.valani.mineralcontest.managers.KitManager;
 import dev.valani.mineralcontest.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -19,7 +18,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CommandAdmin implements CommandExecutor, TabCompleter {
 

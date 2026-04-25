@@ -3,7 +3,11 @@ version: 1.0.0
 author: ValaniDev
 main: dev.valani.mineralcontest.Main
 api-version: 21.1.1
+depend:
+  - WorldEdit
 commands:
+  generate:
+    description: "Créer une nouvelle carte"
   mineralcontest:
     aliases: [ mc ]
     description: "Default command for mineral contest"

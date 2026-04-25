@@ -14,8 +14,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class PlayerTakeDamageListener implements Listener {
     private final TeamManager teamManager;
 
-    public PlayerTakeDamageListener(TeamManager teamManager) {
-        this.teamManager = teamManager;
+    public PlayerTakeDamageListener(GameManager gameManager) {
+        this.teamManager = gameManager.getTeamManager();
     }
 
     @EventHandler

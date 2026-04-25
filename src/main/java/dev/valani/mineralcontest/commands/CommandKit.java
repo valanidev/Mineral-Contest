@@ -16,10 +16,10 @@ public class CommandKit implements CommandExecutor {
     private final GameManager gameManager;
     private final KitSelectorMenu kitSelectorMenu;
 
-    public CommandKit(Main plugin, KitSelectorMenu kitSelectorMenu) {
+    public CommandKit(Main plugin, GameManager gameManager) {
         this.plugin = plugin;
-        this.kitSelectorMenu = kitSelectorMenu;
-        this.gameManager = plugin.getGameManager();
+        this.gameManager = gameManager;
+        this.kitSelectorMenu = gameManager.getKitSelectorMenu();
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -31,7 +31,7 @@ public class CommandKit implements CommandExecutor {
             player.sendMessage("§cLe kit peut être choisi uniquement pendant la phase de sélection des kits.");
             return false;
         }
-        Team playerTeam = gameManager.getTeamManager().getPlayerTeam(player).orElse(null);
+        Team playerTeam = gameManager.getTeamManager().getTeam(player);
         if (playerTeam == null) {
             player.sendMessage("§cVous devez d'abord choisir une team.");
             return false;

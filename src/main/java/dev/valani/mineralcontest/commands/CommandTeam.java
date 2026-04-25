@@ -3,6 +3,7 @@ package dev.valani.mineralcontest.commands;
 import dev.valani.mineralcontest.Main;
 import dev.valani.mineralcontest.managers.GameManager;
 import dev.valani.mineralcontest.menus.TeamSelectorMenu;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
@@ -21,6 +22,7 @@ public class CommandTeam extends PlayerOnlyCommand {
     protected boolean onPlayerCommand(Player player, Command cmd, String label, String[] args) {
         if (!gameManager.isWaiting()) {
             player.sendMessage(plugin.getConfigManager().getString("messages.game.already_started"));
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return false;
         }
 

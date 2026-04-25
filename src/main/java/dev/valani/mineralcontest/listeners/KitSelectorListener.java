@@ -23,11 +23,11 @@ public class KitSelectorListener implements Listener {
     private final KitManager kitManager;
     private final KitSelectorMenu menu;
 
-    public KitSelectorListener(Main plugin, KitSelectorMenu menu) {
+    public KitSelectorListener(Main plugin, GameManager gameManager) {
         this.plugin = plugin;
-        this.gameManager = plugin.getGameManager();
-        this.kitManager = plugin.getGameManager().getKitManager();
-        this.menu = menu;
+        this.gameManager = gameManager;
+        this.kitManager = gameManager.getKitManager();
+        this.menu = gameManager.getKitSelectorMenu();
     }
 
     @EventHandler

@@ -23,11 +23,11 @@ public class TeamSelectorListener implements Listener {
     private final TeamManager teamManager;
     private final TeamSelectorMenu menu;
 
-    public TeamSelectorListener(Main plugin, TeamSelectorMenu menu) {
+    public TeamSelectorListener(Main plugin, GameManager gameManager) {
         this.plugin = plugin;
-        this.gameManager = plugin.getGameManager();
-        this.teamManager = plugin.getGameManager().getTeamManager();
-        this.menu = menu;
+        this.gameManager = gameManager;
+        this.teamManager = gameManager.getTeamManager();
+        this.menu = gameManager.getTeamSelectorMenu();
     }
 
     @EventHandler
@@ -38,8 +38,8 @@ public class TeamSelectorListener implements Listener {
         if (!(event.getWhoClicked() instanceof Player player)) return;
         if (event.getCurrentItem() == null) return;
 
-        if (!gameManager.isState(GameState.WAITING)) {
-            player.sendMessage("§cLa partie a déjà commencé !");
+        if (!gameManager.isWaiting()) {
+            player.sendMessage(plugin.getConfigManager().getString("messages.game.already_started"));
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -48,12 +48,12 @@ public class TeamSelectorListener implements Listener {
         List<Team> teams = teamManager.getTeams();
         if (slot >= teams.size()) return;
 
-        Team target = teams.get(slot);
-        GameResult result = teamManager.joinTeam(player, target);
+        Team team = teams.get(slot);
+        GameResult result = teamManager.joinTeam(player, team);
 
         switch (result) {
             case SUCCESS -> {
-                Bukkit.broadcastMessage("§6§lTEAM §a" + player.getDisplayName() + " §aa rejoint la team " + target.getDisplayName() + "§a.");
+                Bukkit.broadcastMessage("§6§lTEAM §a" + player.getDisplayName() + " §aa rejoint la team " + team.getDisplayName() + "§a.");
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
             }
             case TEAM_FULL -> {

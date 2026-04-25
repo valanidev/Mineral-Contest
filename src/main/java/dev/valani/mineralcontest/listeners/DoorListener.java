@@ -22,9 +22,9 @@ public class DoorListener implements Listener {
     private final TeamManager teamManager;
     private final DoorManager doorManager;
 
-    public DoorListener(GameManager gameManager, TeamManager teamManager) {
+    public DoorListener(GameManager gameManager) {
         this.gameManager = gameManager;
-        this.teamManager = teamManager;
+        this.teamManager = gameManager.getTeamManager();
         this.doorManager = gameManager.getDoorManager();
     }
 

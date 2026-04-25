@@ -11,6 +11,13 @@ messages:
   no_such_args: "&cArgument inconnu..."
   no_such_team: "&cAucune équipe avec ce nom n'a été trouvée !"
 
+world:
+  name: "mineralcontest"
+  default_spawn:
+    x: 0
+    z: 0
+  allow_structures: false
+
 arena:
   chest_block: 'CHEST'
   cooldown_min_seconds: 180
