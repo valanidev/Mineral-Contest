@@ -1,0 +1,137 @@
+# Variables
+# %prefix% = Préfixe du plugin
+# %time% = Temps restant
+
+messages:
+  prefix: "&2[&aMineralContest&2]&r"
+  enabled: "Plugin activé"
+  disabled: "Plugin désactivé"
+  not_allowed_now: "&cCette action n'est pas autorisée pour le moment."
+
+  commands:
+    player_only: "&cSeul un joueur peut exécuter cette commande."
+
+  time_alert: "&6&lTIMER&a Il reste &2%time% &ade jeu !"
+
+  drop_spawned: "%prefix% &aUn nouveau drop est apparu en &2%x%&a, &2%y%&a, &2%z%&a !"
+
+  scoreboard_name: "&6&lMINERAL CONTEST"
+
+  # Called during the start, end, reset...
+  game_state:
+    waiting: "&6&lINFO &aLa partie est maintenant en attente."
+    kit_select: "&6&lINFO &aTu as %time% pour choisir ton kit !"
+    in_game: "&6&lINFO &aLa partie commence, &2bonne chance &a!"
+    ended: "&6&lINFO &aLa partie est terminée !"
+
+  arena_chest_in_use: "%prefix% &cUn joueur est en train d'ouvrir le coffre d'arène !"
+  arena_chest_unavailable: "%prefix% &cLe coffre d'arène n'est pas disponible pour le moment."
+  arena_chest_soon: "%prefix% &aLe coffre d'arène sera disponible dans &2%time% &asecondes !"
+  arena_chest_available: "%prefix% &aLe coffre d'arène est maintenant disponible ! Téléporte-toi avec &6&l/arene &a!"
+  arena_chest_looted: "%prefix% &aLe coffre d'arène a été récupéré !"
+
+settings:
+  world: "world"
+  duration: 2700
+  alerts:
+    - 600
+    - 300
+    - 60
+    - 30
+    - 10
+    - 5
+    - 4
+    - 3
+    - 2
+    - 1
+  respawn_delay: 5
+  teams:
+    max_players: 3
+    show_nametag_prefix: true
+    show_name_in_tab: true
+    allow_friendly_fire: false
+    list:
+      rouge:
+        name: "Rouge"
+        color: "RED"
+        icon: "RED_WOOL"
+      vert:
+        name: "Vert"
+        color: "GREEN"
+        icon: "GREEN_WOOL"
+      bleu:
+        name: "Bleu"
+        color: "BLUE"
+        icon: "BLUE_WOOL"
+      jaune:
+        name: "Jaune"
+        color: "YELLOW"
+        icon: "YELLOW_WOOL"
+  kits:
+    select_time: 30
+    auto_open: true
+    broadcast: true
+  drops:
+    open_time: 5
+    timer:
+      min: 840
+      max: 1000
+    location:
+      min: 100
+      max: 400
+    loot:
+      - material: EMERALD
+        min: 0
+        max: 2
+      - material: DIAMOND
+        min: 2
+        max: 4
+      - material: GOLD_INGOT
+        min: 16
+        max: 20
+      - material: IRON_INGOT
+        min: 28
+        max: 36
+      - material: COPPER_INGOT
+        min: 30
+        max: 60
+  arena:
+    chest_block: "CHEST"
+    chest_name: "&6&lCoffre d'arène"
+    max_interaction_distance: 4
+    animation_time: 5
+    time:
+      min: 600
+      max: 900
+    loot:
+      - material: EMERALD
+        min: 1
+        max: 3
+      - material: DIAMOND
+        min: 2
+        max: 6
+      - material: GOLD_INGOT
+        min: 12
+        max: 20
+      - material: IRON_INGOT
+        min: 24
+        max: 42
+      - material: COPPER_INGOT
+        min: 28
+        max: 58
+  scores:
+    EMERALD: 300
+    DIAMOND: 150
+    GOLD_INGOT: 50
+    IRON_INGOT: 20
+    COPPER_INGOT: 4
+    REDSTONE: -3
+  world_border:
+    initial_size: 800
+    shrink_duration: 15
+    stages:
+      1800: 700
+      900: 500
+      600: 400
+      300: 300
+      60: 200

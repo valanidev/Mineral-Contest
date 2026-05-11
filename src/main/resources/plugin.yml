@@ -1,0 +1,37 @@
+name: MineralContest
+version: 1.0.0
+author: ValaniDev
+main: dev.valani.mineralcontest.Main
+api-version: 21.1.1
+commands:
+  start:
+    description: Démarrer la partie.
+    permissions: mineralcontest.start
+  end:
+    description: Terminer la partie en cours.
+    permissions: mineralcontest.end
+  reset:
+    description: Réinitialiser la partie en cours.
+    permissions: mineralcontest.reset
+  arenachest:
+    description: Gérer le coffre d'arène
+    permission: mineralcontest.arenachest
+    aliases: [ac]
+  arena:
+    description: Se téléporter à l'arène
+    aliases: [arene]
+  setupteam:
+    description: Gérer les emplacements des équipes
+    permissions: mineralcontest.setupteam
+  setupkit:
+    description: Gérer les kits des joueurs
+    permissions: mineralcontest.setupkit
+  team:
+    description: Sélectionner une équipe
+  kit:
+    description: Sélectionner un kit
+  drop:
+    description: Gérer les drops
+  teamchat:
+    description: Utiliser le chat de l'équipe
+    aliases: [t]
